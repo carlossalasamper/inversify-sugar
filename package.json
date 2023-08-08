@@ -1,0 +1,67 @@
+{
+  "name": "inversify-sugar",
+  "version": "0.1.0",
+  "description": "🧁 Sweeten up the InversifyJS syntax with this set of decorators, functions, and types built on top of the dependency container.",
+  "author": {
+    "name": "Carlos Sala Samper",
+    "url": "https://godofprogramming.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carlossalasamper/inversify-sugar.git",
+    "directory": ""
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "dependency injection",
+    "inversify",
+    "inversifyjs",
+    "javascript",
+    "typescript",
+    "ioc",
+    "inversion of control",
+    "container"
+  ],
+  "scripts": {
+    "lint": "eslint . --ext .ts",
+    "test": "",
+    "build": "tspc",
+    "build:dev": "yarn build --watch",
+    "yalc:publish": "npx yalc publish",
+    "yalc:update": "npx yalc push --scripts --update --replace",
+    "npm:publish": "yarn build && npm publish"
+  },
+  "dependencies": {
+    "@types/cli-color": "^2.0.2",
+    "cli-color": "^2.0.3",
+    "reflect-metadata": "^0.1.13",
+    "ts-transformer-keys": "^0.4.4",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@commitlint/config-conventional": "^17.6.7",
+    "@typescript-eslint/eslint-plugin": "^5.59.11",
+    "@typescript-eslint/parser": "^5.59.11",
+    "commitlint": "^17.6.5",
+    "eslint": "^8.42.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "husky": "^8.0.3",
+    "inversify": "6.0.1",
+    "prettier": "^2.8.8",
+    "ts-patch": "^3.0.2",
+    "typescript": "^5.1.6"
+  },
+  "peerDependencies": {
+    "inversify": "6.0.1"
+  }
+}
