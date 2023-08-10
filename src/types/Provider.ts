@@ -19,31 +19,29 @@ const ValueProviderSchema = z.object({
   useValue: z.any(),
 });
 
+const FactoryProviderSchema = z.object({
+  provide: ProvideSchema,
+  useFactory: z.function(),
+});
+
+interface WithProvide {
+  /**
+   * @description ServiceIdentifier / InjectionToken
+   */
+  provide: interfaces.ServiceIdentifier;
+}
+
 /**
  * Shorthand to define a *Class* provider to self in singleton scope.
  */
 export type ConstructorProvider<T = any> = Constructor<T>;
 
 /**
- * Interface defining a *Class* type provider.
- *
- * For example:
- * ```typescript
- * const connectionProvider = {
- *   provide: Symbol('ISomeClass'),
- *   useClass: SomeClass,
- * };
- * ```
- *
- * @publicApi
+ * @description Interface defining a *Class* type provider.
  */
-export interface ClassProvider<T = any> {
+export interface ClassProvider<T = any> extends Partial<WithProvide> {
   /**
-   * Injection token
-   */
-  provide?: interfaces.ServiceIdentifier;
-  /**
-   * Instance of a provider to be injected.
+   * @description Instance of a provider to be injected.
    */
   useClass: T;
   useValue?: never;
@@ -55,44 +53,45 @@ export interface ClassProvider<T = any> {
 }
 
 /**
- * Interface defining a *Value* type provider.
- *
- * For example:
- * ```typescript
- * const connectionProvider = {
- *   provide: 'CONNECTION',
- *   useValue: connection,
- * };
- * ```
- *
- * @publicApi
+ * @description Interface defining a *Value* type provider.
  */
-export interface ValueProvider<T = any> {
+export interface ValueProvider<T = any> extends WithProvide {
   /**
-   * Injection token
-   */
-  provide: interfaces.ServiceIdentifier;
-  /**
-   * Instance of a provider to be injected.
+   * @description Instance of a provider to be injected.
    */
   useValue: T;
+  useClass?: never;
+}
+
+/**
+ * @description Interface defining a *Factory* type provider. The scope of a factory provider is always singleton.
+ */
+export interface FactoryProvider<T = any> extends WithProvide {
+  /**
+   * @description Factory function to be injected.
+   */
+  useFactory: (context: interfaces.Context) => (...args: any[]) => T;
+  useValue?: never;
   useClass?: never;
 }
 
 type Provider<T = any> =
   | ConstructorProvider<T>
   | ClassProvider<T>
-  | ValueProvider<T>;
+  | ValueProvider<T>
+  | FactoryProvider<T>;
 
 export default Provider;
 
 export const isConstructorProvider = (data: unknown) => {
   return ConstructorProviderSchema.safeParse(data).success;
 };
-
 export const isClassProvider = (data: unknown) => {
   return ClassProviderSchema.safeParse(data).success;
 };
 export const isValueProvider = (data: unknown) => {
   return ValueProviderSchema.safeParse(data).success;
+};
+export const isFactoryProvider = (data: unknown) => {
+  return FactoryProviderSchema.safeParse(data).success;
 };

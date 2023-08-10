@@ -11,12 +11,18 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
-  - [Inversify and Other Dependency Systems](#inversify-and-other-dependency-systems)
+  - [Other Dependency Systems](#other-dependency-systems)
+  - [Inversify API Disadvantages](#inversify-api-disadvantages)
 - [Getting Started](#getting-started)
   - [1. Installation](#1-installation)
   - [2. Define a Scoped Module](#2-define-a-scoped-module)
   - [3. Entrypoint](#3-entrypoint)
 - [Documentation](#documentation)
+  - [Modules](#modules)
+    - [Imports](#imports)
+    - [Providers](#providers)
+    - [Exports](#exports)
+    - [Get the Container of a Module](#get-the-container-of-a-module)
 - [Support the Project](#support-the-project)
 
 ## Introduction
@@ -25,7 +31,7 @@ Why do you need to add Inversify Sugar to your project?
 
 Let me illustrate with a comparison.
 
-### Inversify and Other Dependency Systems
+### Other Dependency Systems
 
 Have you ever tried the [Angular](https://angular.io/)'s dependency injection system?
 
@@ -73,6 +79,8 @@ import { CatsModule } from "./cats/cats.module";
 })
 export class AppModule {}
 ```
+
+### Inversify API Disadvantages
 
 Why can't we Inversify users organize our dependencies in such an elegant way?
 
@@ -184,6 +192,7 @@ import { AppModule } from "./AppModule";
 
 // Configure the InversifySugar instance
 InversifySugar.debug = process.env.NODE_ENV === "development";
+InversifySugar.defaultScope = "Singleton";
 
 // Entrypoint
 InversifySugar.run(AppModule);
@@ -198,6 +207,26 @@ You can now start injecting your dependencies where you need them.
 Let's not forget that Inversify Sugar works on top of Inversify, so to understand what's going on behind the scenes, we'll be referencing [the original Inversify documentation](https://inversify.io/) throughout this guide.
 
 We also recommend having the original documentation on hand in order to report malfunctions in this library or the lack of any of the Inversify features.
+
+Below you will find a detailed explanation of each of the concepts that this library handles together with different use examples and its public API.
+
+### Modules
+
+// TODO
+
+#### Imports
+
+// TODO
+
+#### Providers
+
+// TODO
+
+#### Exports
+
+// TODO
+
+#### Get the Container of a Module
 
 // TODO
 

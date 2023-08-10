@@ -1,6 +1,6 @@
 {
   "name": "inversify-sugar",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "🧁 Sweeten up the InversifyJS syntax with this set of decorators, functions, and types built on top of the dependency container.",
   "author": {
     "name": "Carlos Sala Samper",

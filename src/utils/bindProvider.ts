@@ -3,9 +3,11 @@ import { Container, interfaces } from "inversify";
 import Provider, {
   ClassProvider,
   ConstructorProvider,
+  FactoryProvider,
   ValueProvider,
   isClassProvider,
   isConstructorProvider,
+  isFactoryProvider,
   isValueProvider,
 } from "../types/Provider";
 import InversifySugar from "./InversifySugar";
@@ -28,6 +30,11 @@ const bindProvider = (provider: Provider, container: Container) => {
     container
       .bind(valueProvider.provide)
       .toConstantValue(valueProvider.useValue);
+  } else if (isFactoryProvider(provider)) {
+    const factoryProvider = provider as FactoryProvider;
+    container
+      .bind(factoryProvider.provide)
+      .toFactory(factoryProvider.useFactory);
   }
 };
 
