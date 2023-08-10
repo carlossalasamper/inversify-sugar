@@ -3,15 +3,13 @@ import Provider from "./Provider";
 import { Constructor } from ".";
 
 /**
- * Interface defining the property object that describes the module.
- *
- * @see [Modules](https://github.com/carlossalasamper/clincoud#modules)
+ * @description Interface defining the property object that describes the module.
  *
  * @publicApi
  */
 export interface ModuleMetadataArgs {
   /**
-   * Optional list of submodules defined in this module which have to be
+   * @description Optional list of submodules defined in this module which have to be
    * registered.
    */
   imports?: Constructor[];

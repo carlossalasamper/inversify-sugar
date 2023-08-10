@@ -29,9 +29,9 @@ export default class InversifySugar {
     | undefined;
 
   /**
-   * @description This method starts the application by importing the root module.
+   * @description This method is used to bootstrap inversify and import the AppModule.
    */
-  static start(AppModule: Constructor): Container {
+  static run(AppModule: Constructor): Container {
     return importModule(AppModule, true);
   }
 
