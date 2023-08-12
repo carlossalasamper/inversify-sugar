@@ -18,7 +18,7 @@ export default class InversifySugar {
    */
   public static debug = false;
 
-  public static _rootContainer: Container | undefined;
+  private static _rootContainer: Container | undefined;
 
   private static _onModuleImported:
     | ((
@@ -35,24 +35,19 @@ export default class InversifySugar {
     return importModule(AppModule, true);
   }
 
-  static get onModuleImported() {
-    return (
-      container: Container,
-      metadata: ModuleMetadata,
-      Module: Constructor
-    ) => {
-      InversifySugar._onModuleImported?.(container, metadata, Module);
+  static onModuleImported(
+    container: Container,
+    metadata: ModuleMetadata,
+    Module: Constructor
+  ) {
+    InversifySugar._onModuleImported?.(container, metadata, Module);
 
-      if (InversifySugar.debug) {
-        console.log(
-          clc.bold("[@module]"),
-          clc.green(`${Module.name} imported.`)
-        );
-      }
-    };
+    if (InversifySugar.debug) {
+      console.log(clc.bold("[@module]"), clc.green(`${Module.name} imported.`));
+    }
   }
 
-  static set onModuleImported(
+  static setOnModuleImported(
     value: (
       container: Container,
       metadata: ModuleMetadata,

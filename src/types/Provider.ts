@@ -1,28 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { interfaces } from "inversify";
-import { z } from "zod";
 import { Constructor } from ".";
-
-const ProvideSchema = z.string().or(z.symbol());
-const ScopeSchema = z.enum(["Singleton", "Request", "Transient"]);
-
-const ConstructorProviderSchema = z.function();
-
-const ClassProviderSchema = z.object({
-  provide: ProvideSchema.optional(),
-  useClass: z.function(),
-  scope: ScopeSchema.optional(),
-});
-
-const ValueProviderSchema = z.object({
-  provide: ProvideSchema,
-  useValue: z.any(),
-});
-
-const FactoryProviderSchema = z.object({
-  provide: ProvideSchema,
-  useFactory: z.function(),
-});
 
 interface WithProvide {
   /**
@@ -82,16 +60,3 @@ type Provider<T = any> =
   | FactoryProvider<T>;
 
 export default Provider;
-
-export const isConstructorProvider = (data: unknown) => {
-  return ConstructorProviderSchema.safeParse(data).success;
-};
-export const isClassProvider = (data: unknown) => {
-  return ClassProviderSchema.safeParse(data).success;
-};
-export const isValueProvider = (data: unknown) => {
-  return ValueProviderSchema.safeParse(data).success;
-};
-export const isFactoryProvider = (data: unknown) => {
-  return FactoryProviderSchema.safeParse(data).success;
-};

@@ -5,12 +5,12 @@ import Provider, {
   ConstructorProvider,
   FactoryProvider,
   ValueProvider,
-  isClassProvider,
-  isConstructorProvider,
-  isFactoryProvider,
-  isValueProvider,
 } from "../types/Provider";
 import InversifySugar from "./InversifySugar";
+import isConstructorProvider from "./validation/isConstructorProvider";
+import isClassProvider from "./validation/isClassProvider";
+import isValueProvider from "./validation/isValueProvider";
+import isFactoryProvider from "./validation/isFactoryProvider";
 
 const bindProvider = (provider: Provider, container: Container) => {
   if (isConstructorProvider(provider)) {

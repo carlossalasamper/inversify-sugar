@@ -6,10 +6,7 @@ import ModuleMetadata, {
   moduleMetadataKeys,
 } from "../types/ModuleMetadata";
 import { Constructor } from "../types";
-import { Container } from "inversify";
 import InversifySugar from "./InversifySugar";
-
-const container = new Container();
 
 export default function importModule(Module: Constructor, isRoot = false) {
   const metadata = getAllMetadata<ModuleMetadata>(
@@ -18,7 +15,7 @@ export default function importModule(Module: Constructor, isRoot = false) {
   );
 
   for (const provider of metadata.providers) {
-    bindProvider(provider, container);
+    bindProvider(provider, metadata.container);
   }
 
   if (metadata.imports.length > 0) {
@@ -26,7 +23,16 @@ export default function importModule(Module: Constructor, isRoot = false) {
       const isModule = !!Reflect.getMetadata(IsModuleKey, item.prototype);
 
       if (isModule) {
+        const moduleMetadata = getAllMetadata<ModuleMetadata>(
+          item.prototype,
+          moduleMetadataKeys
+        );
+
         importModule(item);
+
+        for (const exportedItem of moduleMetadata.exports) {
+          bindProvider(exportedItem, metadata.container);
+        }
       } else {
         console.warn(
           `Module ${Module.name} imports ${item.name} which is not a module.`
@@ -36,10 +42,10 @@ export default function importModule(Module: Constructor, isRoot = false) {
   }
 
   if (isRoot) {
-    InversifySugar.setRootContainer(container);
+    InversifySugar.setRootContainer(metadata.container);
   } else {
-    InversifySugar.onModuleImported(container, metadata, Module);
+    InversifySugar.onModuleImported(metadata.container, metadata, Module);
   }
 
-  return container;
+  return metadata.container;
 }

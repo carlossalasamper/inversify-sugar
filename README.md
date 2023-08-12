@@ -23,7 +23,9 @@
     - [Providers](#providers)
     - [Exports](#exports)
     - [Get the Container of a Module](#get-the-container-of-a-module)
+- [Code Coverage](#code-coverage)
 - [Support the Project](#support-the-project)
+- [License](#license)
 
 ## Introduction
 
@@ -230,6 +232,17 @@ Below you will find a detailed explanation of each of the concepts that this lib
 
 // TODO
 
+## Code Coverage
+
+The complexity of the memory state during the execution of Inversify Sugar, managing multiple Inversify containers under the hood, is too high to be able to ensure that it is working correctly without writing unit tests of each of the functionalities separately.
+
+So you can use it without worries. You are facing a completely armored dependency system.
+
+<img src="./assets/badges/coverage/badge-functions.svg" />
+<img src="./assets/badges/coverage/badge-lines.svg" />
+<img src="./assets/badges/coverage/badge-statements.svg" />
+<img src="./assets/badges/coverage/badge-branches.svg" />
+
 ## Support the Project
 
 <p align="center">☕️ Buy me a coffee so the open source party never ends.</p>
@@ -245,3 +258,9 @@ Below you will find a detailed explanation of each of the concepts that this lib
 <p align="center">
   <a href="https://godofprogramming.com" target="_blank">godofprogramming.com</a>
 </p>
+
+## License
+
+The Inversify Sugar source code is made available under the [MIT license](./LICENSE).
+
+Some of the dependencies are licensed differently, with the BSD license, for example.

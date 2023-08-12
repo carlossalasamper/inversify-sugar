@@ -2,7 +2,7 @@
   "parser": "@typescript-eslint/parser",
   "extends": ["plugin:@typescript-eslint/recommended", "google", "prettier"],
   "plugins": ["unused-imports"],
-  "ignorePatterns": ["dist", "build", "commitlint.config.js"],
+  "ignorePatterns": ["dist", "build", "**/*.js"],
   "rules": {
     "no-invalid-this": "off",
     "no-unused-vars": "off",
