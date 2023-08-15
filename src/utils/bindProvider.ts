@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Container, interfaces } from "inversify";
+import { Container } from "inversify";
 import Provider, {
   ClassProvider,
   ConstructorProvider,
   FactoryProvider,
   ValueProvider,
 } from "../types/Provider";
-import InversifySugar from "./InversifySugar";
 import isConstructorProvider from "./validation/isConstructorProvider";
 import isClassProvider from "./validation/isClassProvider";
 import isValueProvider from "./validation/isValueProvider";
 import isFactoryProvider from "./validation/isFactoryProvider";
+import setScope from "./setScope";
 
 const bindProvider = (provider: Provider, container: Container) => {
   if (isConstructorProvider(provider)) {
@@ -37,22 +37,5 @@ const bindProvider = (provider: Provider, container: Container) => {
       .toFactory(factoryProvider.useFactory);
   }
 };
-
-function setScope(
-  binding: interfaces.BindingInWhenOnSyntax<any>,
-  scope: interfaces.BindingScope = InversifySugar.defaultScope
-) {
-  switch (scope) {
-    case "Transient":
-      binding.inTransientScope();
-      break;
-    case "Request":
-      binding.inRequestScope();
-      break;
-    case "Singleton":
-      binding.inSingletonScope();
-      break;
-  }
-}
 
 export default bindProvider;

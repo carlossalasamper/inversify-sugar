@@ -23,7 +23,7 @@
     - [Providers](#providers)
     - [Exports](#exports)
     - [Get the Container of a Module](#get-the-container-of-a-module)
-- [Code Coverage](#code-coverage)
+- [Testing](#testing)
 - [Support the Project](#support-the-project)
 - [License](#license)
 
@@ -230,11 +230,37 @@ Below you will find a detailed explanation of each of the concepts that this lib
 
 #### Get the Container of a Module
 
-// TODO
+Ideally we shouldn't be accessing module containers directly to get a service. In either case, the `getModuleContainer` function allows you to get the container of a module in case you need to access it in an statement.
 
-## Code Coverage
+```typescript
+import { getModuleContainer, module, InversifySugar } from "inversify-sugar";
+import { injectable } from "inversify";
 
-The complexity of the memory state during the execution of Inversify Sugar, managing multiple Inversify containers under the hood, is too high to be able to ensure that it is working correctly without writing unit tests of each of the functionalities separately.
+@injectable()
+class TestService {}
+
+@module({
+  providers: [TestService],
+})
+class TestModule {}
+
+@module({
+  imports: [TestModule],
+})
+class AppModule {}
+
+InversifySugar.run(AppModule);
+
+// Accessing the container of a imported module
+const testModuleContainer = getModuleContainer(TestModule);
+const testService = testModuleContainer.get(TestService);
+```
+
+## Testing
+
+The complexity of the memory state during the execution of Inversify Sugar, managing multiple Inversify containers under the hood, is too high to ensure that it is working correctly without writing unit tests of each of the functionalities separately.
+
+For this reason, a set of tests have been written that you can consult [here](./tests).
 
 So you can use it without worries. You are facing a completely armored dependency system.
 

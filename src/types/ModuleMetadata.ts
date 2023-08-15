@@ -1,7 +1,7 @@
 import { keys } from "ts-transformer-keys";
 import Provider from "./Provider";
 import { Constructor } from ".";
-import { Container, interfaces } from "inversify";
+import { Container } from "inversify";
 
 /**
  * @description Interface defining the property object that describes the module.
@@ -24,18 +24,24 @@ export interface ModuleMetadataArgs {
   /**
    * @description Optional list of providers exported from this module.
    */
-  exports?: interfaces.ServiceIdentifier[];
+  exports?: Provider[];
 }
 
 export default interface ModuleMetadata {
   isModule: true;
   isBinded: boolean;
   container: Container;
+  exportsContainer: Container;
   imports: Constructor[];
   providers: Provider[];
-  exports: Constructor[];
+  globalProviders: Provider[];
+  exports: Provider[];
 }
 
-export const IsModuleKey: keyof ModuleMetadata = "isModule";
+export const isModuleKey: keyof ModuleMetadata = "isModule";
+
+export const isBindedKey: keyof ModuleMetadata = "isBinded";
+
+export const containerKey: keyof ModuleMetadata = "container";
 
 export const moduleMetadataKeys = keys<ModuleMetadata>();

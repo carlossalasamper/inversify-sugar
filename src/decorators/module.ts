@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Container } from "inversify";
 import { Constructor } from "../types";
 import ModuleMetadata, { ModuleMetadataArgs } from "../types/ModuleMetadata";
@@ -8,14 +9,22 @@ export default function module({
   exports = [],
 }: ModuleMetadataArgs) {
   return (target: Constructor) => {
-    const metadata = {
+    const scopedProviders = providers.filter(
+      (provider: any) => !provider.isGlobal
+    );
+    const globalProviders = providers.filter(
+      (provider: any) => !!provider.isGlobal
+    );
+    const metadata: ModuleMetadata = {
       isModule: true,
       isBinded: false,
       container: new Container(),
+      exportsContainer: new Container(),
       imports,
-      providers,
+      providers: scopedProviders,
+      globalProviders,
       exports,
-    } as ModuleMetadata;
+    };
 
     for (const key in metadata) {
       if (metadata.hasOwnProperty(key)) {

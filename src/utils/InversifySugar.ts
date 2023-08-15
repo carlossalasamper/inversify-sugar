@@ -2,7 +2,7 @@ import { Container, interfaces } from "inversify";
 import { Constructor } from "../types";
 import importModule from "./importModule";
 import ModuleMetadata from "../types/ModuleMetadata";
-import clc from "cli-color";
+import messagesMap from "./messagesMap";
 
 /**
  * @description InversifySugar is a utility class that helps you to bootstrap inversify and configure it.
@@ -18,7 +18,9 @@ export default class InversifySugar {
    */
   public static debug = false;
 
-  private static _rootContainer: Container | undefined;
+  private static isRunning = false;
+
+  private static _globalContainer = new Container();
 
   private static _onModuleImported:
     | ((
@@ -28,11 +30,21 @@ export default class InversifySugar {
       ) => void)
     | undefined;
 
+  static get globalContainer() {
+    return InversifySugar._globalContainer;
+  }
+
   /**
    * @description This method is used to bootstrap inversify and import the AppModule.
    */
-  static run(AppModule: Constructor): Container {
-    return importModule(AppModule, true);
+  static run(AppModule: Constructor) {
+    if (InversifySugar.isRunning) {
+      throw new Error(messagesMap.alreadyRunning);
+    }
+
+    InversifySugar.isRunning = true;
+
+    importModule(AppModule, true);
   }
 
   static onModuleImported(
@@ -43,7 +55,7 @@ export default class InversifySugar {
     InversifySugar._onModuleImported?.(container, metadata, Module);
 
     if (InversifySugar.debug) {
-      console.log(clc.bold("[@module]"), clc.green(`${Module.name} imported.`));
+      console.log(messagesMap.moduleImported(Module.name));
     }
   }
 
@@ -55,19 +67,5 @@ export default class InversifySugar {
     ) => void
   ) {
     InversifySugar._onModuleImported = value;
-  }
-
-  static get rootContainer() {
-    if (!InversifySugar._rootContainer) {
-      console.warn(
-        clc.xterm(250)("You are accessing the root container before it is set.")
-      );
-    }
-
-    return InversifySugar._rootContainer;
-  }
-
-  static setRootContainer(container: Container | undefined) {
-    InversifySugar._rootContainer = container;
   }
 }

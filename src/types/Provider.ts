@@ -6,7 +6,14 @@ interface WithProvide {
   /**
    * @description ServiceIdentifier / InjectionToken
    */
-  provide: interfaces.ServiceIdentifier;
+  provide: string | symbol;
+}
+
+interface WithIsGlobal {
+  /**
+   * @description Flag that indicates if the provider is binded to the global container.
+   */
+  isGlobal?: boolean;
 }
 
 /**
@@ -17,14 +24,16 @@ export type ConstructorProvider<T = any> = Constructor<T>;
 /**
  * @description Interface defining a *Class* type provider.
  */
-export interface ClassProvider<T = any> extends Partial<WithProvide> {
+export interface ClassProvider<T = any>
+  extends Partial<WithProvide>,
+    WithIsGlobal {
   /**
    * @description Instance of a provider to be injected.
    */
   useClass: T;
   useValue?: never;
   /**
-   * Binding scope of a provider.
+   * @description Binding scope of a provider.
    * @default 'Singleton'
    */
   scope?: interfaces.BindingScope;
@@ -33,7 +42,7 @@ export interface ClassProvider<T = any> extends Partial<WithProvide> {
 /**
  * @description Interface defining a *Value* type provider.
  */
-export interface ValueProvider<T = any> extends WithProvide {
+export interface ValueProvider<T = any> extends WithProvide, WithIsGlobal {
   /**
    * @description Instance of a provider to be injected.
    */
@@ -44,7 +53,7 @@ export interface ValueProvider<T = any> extends WithProvide {
 /**
  * @description Interface defining a *Factory* type provider. The scope of a factory provider is always singleton.
  */
-export interface FactoryProvider<T = any> extends WithProvide {
+export interface FactoryProvider<T = any> extends WithProvide, WithIsGlobal {
   /**
    * @description Factory function to be injected.
    */

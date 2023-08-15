@@ -34,8 +34,8 @@
     "lint": "eslint . --ext .ts",
     "test:unit": "jest --coverage && jest-coverage-badges --input ./coverage/coverage-summary.json --output ./assets/badges/coverage",
     "test": "yarn test:unit",
-    "build": "ttsc",
-    "build:dev": "yarn build --watch",
+    "build": "ttsc --project tsconfig.build.json",
+    "build:dev": "yarn build --project tsconfig.build.json --watch",
     "yalc:publish": "npx yalc publish",
     "yalc:update": "npx yalc push --scripts --update --replace",
     "npm:publish": "yarn build && npm publish"
