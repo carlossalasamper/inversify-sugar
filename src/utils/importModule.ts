@@ -9,8 +9,8 @@ import { Constructor } from "../types";
 import InversifySugar from "./InversifySugar";
 import messagesMap from "./messagesMap";
 import ExportedProviderRef from "../types/ExportedProviderRef";
-import bindExportedProviderRef from "./bindExportedProviderRef";
 import createExportedProviderRef from "./createExportedProviderRef";
+import processImports from "./processImports";
 
 export default function importModule(
   Module: Constructor,
@@ -53,13 +53,7 @@ function importRootModule(Module: Constructor) {
       bindProvider(provider, InversifySugar.globalContainer);
     }
 
-    for (const item of metadata.imports) {
-      const moduleExports = importModule(item);
-
-      for (const providerRef of moduleExports) {
-        bindExportedProviderRef(providerRef, metadata.container);
-      }
-    }
+    processImports(metadata.container, metadata.imports);
   }
 }
 
@@ -83,13 +77,7 @@ function importChildModule(Module: Constructor) {
       bindProvider(provider, InversifySugar.globalContainer);
     }
 
-    for (const item of metadata.imports) {
-      const moduleExports = importModule(item);
-
-      for (const providerRef of moduleExports) {
-        bindExportedProviderRef(providerRef, metadata.container);
-      }
-    }
+    processImports(metadata.container, metadata.imports);
   }
 
   for (const exportedProvider of metadata.exports) {

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export default function isSingleExportedProvider(data: any) {
+export default function isTokenExportedProvider(data: any) {
   return (
     !!data &&
     (typeof data === "string" ||

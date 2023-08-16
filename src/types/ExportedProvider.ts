@@ -2,16 +2,17 @@
 
 import { interfaces } from "inversify";
 
-export interface MultiExportedProvider<T = any> {
+export interface DetailedExportedProvider<T = any> {
   provide: interfaces.ServiceIdentifier<T>;
-  multi: true;
+  multiple?: boolean;
+  deep?: boolean;
   prototype?: never;
 }
 
-export type SingleExportedProvider<T = any> = interfaces.ServiceIdentifier<T>;
+export type TokenExportedProvider<T = any> = interfaces.ServiceIdentifier<T>;
 
 type ExportedProvider<T = any> =
-  | SingleExportedProvider<T>
-  | MultiExportedProvider<T>;
+  | TokenExportedProvider<T>
+  | DetailedExportedProvider<T>;
 
 export default ExportedProvider;

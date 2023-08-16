@@ -63,9 +63,9 @@
     "prettier": "^2.8.8",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
+    "ts-transformer-keys": "^0.4.4",
     "ttypescript": "^1.5.15",
-    "typescript": "^4.9.5",
-    "ts-transformer-keys": "^0.4.4"
+    "typescript": "^4.9.5"
   },
   "peerDependencies": {
     "inversify": "^6.0.1"

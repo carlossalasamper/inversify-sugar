@@ -1,14 +1,14 @@
 import { Constructor } from "../types";
 import ExportedProvider, {
-  MultiExportedProvider,
-  SingleExportedProvider,
+  DetailedExportedProvider,
+  TokenExportedProvider,
 } from "../types/ExportedProvider";
 import ExportedProviderRef from "../types/ExportedProviderRef";
 import ModuleMetadata, { moduleMetadataKeys } from "../types/ModuleMetadata";
 import getAllMetadata from "./getAllMetadata";
 import messagesMap from "./messagesMap";
-import isMultiExportedProvider from "./validation/isMultiExportedProvider";
-import isSingleExportedProvider from "./validation/isSingleExportedProvider";
+import isDetailedExportedProvider from "./validation/isDetailedExportedProvider";
+import isTokenExportedProvider from "./validation/isTokenExportedProvider";
 
 export default function createExportedProviderRef(
   Module: Constructor,
@@ -20,43 +20,50 @@ export default function createExportedProviderRef(
   );
   const exportedProviderRefs: ExportedProviderRef[] = [];
 
-  if (isMultiExportedProvider(exportedProvider)) {
-    const multiExportedProvider = exportedProvider as MultiExportedProvider;
-    const isBound = metadata.container.isBound(multiExportedProvider.provide);
+  if (isDetailedExportedProvider(exportedProvider)) {
+    const detailedExportedProvider =
+      exportedProvider as DetailedExportedProvider;
+    const isBound = metadata.container.isBound(
+      detailedExportedProvider.provide
+    );
     const getValue = () => {
-      return metadata.container.getAll(multiExportedProvider.provide);
+      return detailedExportedProvider.deep
+        ? metadata.container.getAll(detailedExportedProvider.provide)
+        : metadata.container.getAll(detailedExportedProvider.provide); // TODO: get only current container bindings
     };
 
     if (isBound) {
       exportedProviderRefs.push({
-        provide: multiExportedProvider.provide,
+        multiple: true,
+        provide: detailedExportedProvider.provide,
         getValue,
       });
     } else {
       throw new Error(
         messagesMap.notBoundProviderExported(
           Module.name,
-          multiExportedProvider.provide.toString()
+          detailedExportedProvider.provide.toString()
         )
       );
     }
-  } else if (isSingleExportedProvider(exportedProvider)) {
-    const singleExportedProvider = exportedProvider as SingleExportedProvider;
-    const isBound = metadata.container.isBound(singleExportedProvider);
+  } else if (isTokenExportedProvider(exportedProvider)) {
+    const tokenExportedProvider = exportedProvider as TokenExportedProvider;
+    const isBound = metadata.container.isBound(tokenExportedProvider);
     const getValue = () => {
-      return metadata.container.get(singleExportedProvider);
+      return metadata.container.get(tokenExportedProvider);
     };
 
     if (isBound) {
       exportedProviderRefs.push({
-        provide: singleExportedProvider,
+        multiple: false,
+        provide: tokenExportedProvider,
         getValue,
       });
     } else {
       throw new Error(
         messagesMap.notBoundProviderExported(
           Module.name,
-          singleExportedProvider.toString()
+          tokenExportedProvider.toString()
         )
       );
     }

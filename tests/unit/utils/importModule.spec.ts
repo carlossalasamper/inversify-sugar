@@ -167,8 +167,8 @@ describe("importModule", () => {
     ).toBeInstanceOf(AService);
   });
 
-  it("Should resolve dependencies of multi exported providers.", () => {
-    const token = Symbol("token");
+  it("Should resolve dependencies of MultiExportedProvider.", () => {
+    const ProviderToken = Symbol("ProviderToken");
 
     @injectable()
     class AService {}
@@ -179,18 +179,18 @@ describe("importModule", () => {
     @module({
       providers: [
         {
-          provide: token,
+          provide: ProviderToken,
           useClass: AService,
         },
         {
-          provide: token,
+          provide: ProviderToken,
           useClass: BService,
         },
       ],
       exports: [
         {
-          provide: token,
-          multi: true,
+          provide: ProviderToken,
+          multiple: true,
         },
       ],
     })
@@ -203,7 +203,10 @@ describe("importModule", () => {
 
     importModule(RootModule, true);
 
-    expect(getModuleContainer(RootModule).get(token)).toHaveLength(2);
+    const container = getModuleContainer(RootModule);
+    const resolvedProviders = container.get(ProviderToken);
+
+    expect(resolvedProviders).toHaveLength(2);
   });
 
   it("Shouldn't resolve not exported providers of a imported module.", () => {
@@ -267,11 +270,11 @@ describe("importModule", () => {
       exports: [
         {
           provide: NotBoundService,
-          multi: true,
+          multiple: true,
         },
         {
           provide: NotBoundService,
-          multi: true,
+          multiple: true,
         },
       ],
     })
