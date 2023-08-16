@@ -1,4 +1,4 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { InversifySugar, module } from "../../../src";
 import getModuleContainer from "../../../src/utils/getModuleContainer";
 import importModule from "../../../src/utils/importModule";
@@ -8,7 +8,11 @@ import messagesMap from "../../../src/utils/messagesMap";
 class TestService {}
 
 describe("importModule", () => {
-  it("Should import a module with imports.", () => {
+  beforeEach(() => {
+    InversifySugar.reset();
+  });
+
+  it("Should import a module that is importing another module.", () => {
     @module({
       providers: [TestService],
     })
@@ -32,7 +36,33 @@ describe("importModule", () => {
     })
     class ProvidersModule {}
 
-    expect(importModule(ProvidersModule).isBound(TestService)).toBe(true);
+    importModule(ProvidersModule);
+
+    expect(getModuleContainer(ProvidersModule).isBound(TestService)).toBe(true);
+  });
+
+  it("Should import a module where a provider depends on another provider.", () => {
+    @injectable()
+    class TestService2 {
+      constructor(
+        @inject(TestService) public readonly testService: TestService
+      ) {}
+    }
+    @module({
+      providers: [TestService, TestService2],
+    })
+    class ProvidersModule {}
+
+    @module({
+      imports: [ProvidersModule],
+    })
+    class RootModule {}
+
+    importModule(RootModule, true);
+
+    expect(getModuleContainer(ProvidersModule).isBound(TestService2)).toBe(
+      true
+    );
   });
 
   it("Should import a module with exports and access exported provider.", () => {
@@ -47,9 +77,9 @@ describe("importModule", () => {
     })
     class ExportsModule {}
 
-    const container = importModule(ExportsModule);
+    importModule(ExportsModule);
 
-    expect(container.isBound(TestService)).toBe(true);
+    expect(getModuleContainer(ExportsModule).isBound(TestService)).toBe(true);
   });
 
   it("Should print a warning when importing a class that is not a module.", () => {
@@ -65,7 +95,7 @@ describe("importModule", () => {
     importModule(ImportsModule);
 
     expect(consoleWarnSpy).toBeCalledWith(
-      messagesMap.notAModuleImported(ImportsModule.name, NotAModule.name)
+      messagesMap.notAModuleImported(NotAModule.name)
     );
   });
 
@@ -108,5 +138,180 @@ describe("importModule", () => {
     importModule(RootModule, true);
 
     expect(InversifySugar.globalContainer.isBound(GlobalService)).toBe(true);
+  });
+
+  it("Should resolve dependencies of exported providers.", () => {
+    @injectable()
+    class AService {}
+
+    @injectable()
+    class TestService {
+      constructor(@inject(AService) public readonly aService: AService) {}
+    }
+
+    @module({
+      providers: [TestService, AService],
+      exports: [TestService],
+    })
+    class ExportedServiceModule {}
+
+    @module({
+      imports: [ExportedServiceModule],
+    })
+    class RootModule {}
+
+    importModule(RootModule, true);
+
+    expect(
+      getModuleContainer(RootModule).get(TestService).aService
+    ).toBeInstanceOf(AService);
+  });
+
+  it("Should resolve dependencies of multi exported providers.", () => {
+    const token = Symbol("token");
+
+    @injectable()
+    class AService {}
+
+    @injectable()
+    class BService {}
+
+    @module({
+      providers: [
+        {
+          provide: token,
+          useClass: AService,
+        },
+        {
+          provide: token,
+          useClass: BService,
+        },
+      ],
+      exports: [
+        {
+          provide: token,
+          multi: true,
+        },
+      ],
+    })
+    class MultiExportedProviderModule {}
+
+    @module({
+      imports: [MultiExportedProviderModule],
+    })
+    class RootModule {}
+
+    importModule(RootModule, true);
+
+    expect(getModuleContainer(RootModule).get(token)).toHaveLength(2);
+  });
+
+  it("Shouldn't resolve not exported providers of a imported module.", () => {
+    @injectable()
+    class AService {}
+
+    @injectable()
+    class BService {}
+
+    @injectable()
+    class TestService {
+      constructor(
+        @inject(AService) public readonly aService: AService,
+        @inject(BService) public readonly bService: BService
+      ) {}
+    }
+
+    @module({
+      providers: [TestService, AService, BService],
+      exports: [TestService],
+    })
+    class TestModule {}
+
+    @module({
+      imports: [TestModule],
+    })
+    class RootModule {}
+
+    importModule(RootModule, true);
+
+    const container = getModuleContainer(RootModule);
+
+    expect(container.isBound(AService)).toBe(false);
+    expect(container.isBound(BService)).toBe(false);
+  });
+
+  it("Should throw an error when exporting a SingleExportedProvider that is not bound.", () => {
+    @injectable()
+    class NotBoundService {}
+
+    @module({
+      exports: [NotBoundService],
+    })
+    class TestModule {}
+
+    @module({
+      imports: [TestModule],
+    })
+    class RootModule {}
+
+    expect(() => importModule(RootModule, true)).toThrowError(
+      messagesMap.notBoundProviderExported(TestModule.name, NotBoundService)
+    );
+  });
+
+  it("Should throw an error when exporting a MultiExportedProvider that is not bound.", () => {
+    @injectable()
+    class NotBoundService {}
+
+    @module({
+      exports: [
+        {
+          provide: NotBoundService,
+          multi: true,
+        },
+        {
+          provide: NotBoundService,
+          multi: true,
+        },
+      ],
+    })
+    class TestModule {}
+
+    @module({
+      imports: [TestModule],
+    })
+    class RootModule {}
+
+    expect(() => importModule(RootModule, true)).toThrowError(
+      messagesMap.notBoundProviderExported(TestModule.name, NotBoundService)
+    );
+  });
+
+  it("Exported providers of a module should be bound to every module that imports it.", () => {
+    @module({
+      providers: [TestService],
+      exports: [TestService],
+    })
+    class ExportedServiceModule {}
+
+    @module({
+      imports: [ExportedServiceModule],
+    })
+    class AModule {}
+
+    @module({
+      imports: [ExportedServiceModule],
+    })
+    class BModule {}
+
+    @module({
+      imports: [AModule, BModule],
+    })
+    class RootModule {}
+
+    importModule(RootModule, true);
+
+    expect(getModuleContainer(AModule).isBound(TestService)).toBe(true);
+    expect(getModuleContainer(BModule).isBound(TestService)).toBe(true);
   });
 });

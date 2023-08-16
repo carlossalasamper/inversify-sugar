@@ -8,6 +8,7 @@ describe("setScope", () => {
   const container = new Container();
 
   beforeEach(() => {
+    InversifySugar.reset();
     container?.unbindAll();
   });
 
@@ -42,7 +43,7 @@ describe("setScope", () => {
     const binding = container.bind(ClassA).toSelf();
     const inSingletonScope = jest.spyOn(binding, "inSingletonScope");
 
-    InversifySugar.defaultScope = "Singleton";
+    InversifySugar.options.defaultScope = "Singleton";
 
     setScope(binding);
 

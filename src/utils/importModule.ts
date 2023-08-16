@@ -2,80 +2,103 @@
 import getAllMetadata from "./getAllMetadata";
 import bindProvider from "./bindProvider";
 import ModuleMetadata, {
-  containerKey,
   isBindedKey,
-  isModuleKey,
   moduleMetadataKeys,
 } from "../types/ModuleMetadata";
 import { Constructor } from "../types";
 import InversifySugar from "./InversifySugar";
-import { Container } from "inversify";
 import messagesMap from "./messagesMap";
+import ExportedProviderRef from "../types/ExportedProviderRef";
+import bindExportedProviderRef from "./bindExportedProviderRef";
+import createExportedProviderRef from "./createExportedProviderRef";
 
-export default function importModule(Module: Constructor, isRoot = false) {
+export default function importModule(
+  Module: Constructor,
+  isRoot = false
+): ExportedProviderRef[] {
   const metadata = getAllMetadata<ModuleMetadata>(
     Module.prototype,
     moduleMetadataKeys
   );
-  let moduleContainer = metadata.container;
+  const exportedProviders: ExportedProviderRef[] = [];
+
+  if (metadata.isModule) {
+    if (isRoot) {
+      importRootModule(Module);
+    } else {
+      exportedProviders.push(...importChildModule(Module));
+    }
+
+    Reflect.defineMetadata(isBindedKey, true, Module.prototype);
+  } else {
+    console.warn(messagesMap.notAModuleImported(Module.name));
+  }
+
+  return exportedProviders;
+}
+
+/**
+ * @description This function is used to import a root module.
+ * @param Module
+ * @returns
+ */
+function importRootModule(Module: Constructor) {
+  const metadata = getAllMetadata<ModuleMetadata>(
+    Module.prototype,
+    moduleMetadataKeys
+  );
 
   if (!metadata.isBinded) {
-    // If it's the root module, bind the providers to the global container.
-    if (isRoot) {
-      for (const provider of metadata.providers) {
-        bindProvider(provider, InversifySugar.globalContainer);
-      }
-    } else {
-      for (const provider of metadata.globalProviders) {
-        bindProvider(provider, InversifySugar.globalContainer);
-      }
-
-      // If it's not the root module, merge the module container with the global container.
-      moduleContainer = Container.merge(
-        InversifySugar.globalContainer,
-        moduleContainer
-      ) as Container;
-    }
-
-    // Bind the providers to the module container.
     for (const provider of metadata.providers) {
-      bindProvider(provider, moduleContainer);
+      bindProvider(provider, InversifySugar.globalContainer);
     }
 
-    // Bind the exported providers to the exports container.
-    for (const exportedProvider of metadata.exports) {
-      bindProvider(exportedProvider, metadata.exportsContainer);
-    }
+    for (const item of metadata.imports) {
+      const moduleExports = importModule(item);
 
-    if (metadata.imports.length > 0) {
-      for (const item of metadata.imports) {
-        const isModule = !!Reflect.getMetadata(isModuleKey, item.prototype);
-
-        if (isModule) {
-          const moduleMetadata = getAllMetadata<ModuleMetadata>(
-            item.prototype,
-            moduleMetadataKeys
-          );
-
-          importModule(item);
-
-          moduleContainer = Container.merge(
-            moduleContainer,
-            moduleMetadata.exportsContainer
-          ) as Container;
-        } else {
-          console.warn(messagesMap.notAModuleImported(Module.name, item.name));
-        }
+      for (const providerRef of moduleExports) {
+        bindExportedProviderRef(providerRef, metadata.container);
       }
     }
+  }
+}
 
-    Reflect.defineMetadata(containerKey, moduleContainer, Module.prototype);
-    Reflect.defineMetadata(isBindedKey, true, Module.prototype);
+/**
+ * @description This function is used to import a child module.
+ * @param Module
+ */
+function importChildModule(Module: Constructor) {
+  const metadata = getAllMetadata<ModuleMetadata>(
+    Module.prototype,
+    moduleMetadataKeys
+  );
+  const exportedProviderRefs: ExportedProviderRef[] = [];
 
-    if (!isRoot) {
-      InversifySugar.onModuleImported(moduleContainer, metadata, Module);
+  if (!metadata.isBinded) {
+    for (const provider of metadata.providers) {
+      bindProvider(provider, metadata.container);
+    }
+
+    for (const provider of metadata.globalProviders) {
+      bindProvider(provider, InversifySugar.globalContainer);
+    }
+
+    for (const item of metadata.imports) {
+      const moduleExports = importModule(item);
+
+      for (const providerRef of moduleExports) {
+        bindExportedProviderRef(providerRef, metadata.container);
+      }
     }
   }
 
-  return moduleContainer;
+  for (const exportedProvider of metadata.exports) {
+    exportedProviderRefs.push(
+      ...createExportedProviderRef(Module, exportedProvider)
+    );
+  }
+
+  InversifySugar.onModuleImported(metadata.container, metadata, Module);
+
+  return exportedProviderRefs;
 }

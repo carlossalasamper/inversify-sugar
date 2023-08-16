@@ -21,8 +21,11 @@ describe("InversifySugar", () => {
   );
   const onModuleImported = jest.fn();
 
-  InversifySugar.setOnModuleImported(onModuleImported);
-  InversifySugar.debug = true;
+  beforeAll(() => {
+    InversifySugar.reset();
+    InversifySugar.setOnModuleImported(onModuleImported);
+    InversifySugar.options.debug = true;
+  });
 
   it("InversifySugar.run should be called once.", () => {
     InversifySugar.run(AppModule);
@@ -44,5 +47,10 @@ describe("InversifySugar", () => {
         messagesMap.moduleImported(importedModule.name)
       );
     }
+  });
+
+  it("Should reset InversifySugar even if its nto running", () => {
+    InversifySugar.reset();
+    expect(() => InversifySugar.run(AppModule)).not.toThrow();
   });
 });

@@ -29,14 +29,10 @@ describe("@module", () => {
     });
 
     expect(metadata.container).toBeInstanceOf(Container);
-    expect({ ...metadata.container, id: emptyContainer.id }).toMatchObject(
-      emptyContainer
-    );
-
-    expect(metadata.exportsContainer).toBeInstanceOf(Container);
     expect({
-      ...metadata.exportsContainer,
+      ...metadata.container,
       id: emptyContainer.id,
+      parent: null,
     }).toMatchObject(emptyContainer);
   });
 

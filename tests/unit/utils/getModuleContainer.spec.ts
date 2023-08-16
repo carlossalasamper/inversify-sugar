@@ -1,4 +1,4 @@
-import { injectable } from "inversify";
+import { Container, injectable } from "inversify";
 import { getModuleContainer, module } from "../../../src";
 import importModule from "../../../src/utils/importModule";
 
@@ -12,8 +12,8 @@ describe("getModuleContainer", () => {
     })
     class TestModule {}
 
-    const container = importModule(TestModule);
+    importModule(TestModule);
 
-    expect(getModuleContainer(TestModule)).toBe(container);
+    expect(getModuleContainer(TestModule)).toBeInstanceOf(Container);
   });
 });

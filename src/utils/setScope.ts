@@ -4,17 +4,16 @@ import InversifySugar from "./InversifySugar";
 
 export default function setScope(
   binding: interfaces.BindingInWhenOnSyntax<any>,
-  scope: interfaces.BindingScope = InversifySugar.defaultScope
+  scope: interfaces.BindingScope = InversifySugar.options.defaultScope
 ) {
-  switch (scope) {
-    case "Transient":
-      binding.inTransientScope();
-      break;
-    case "Request":
-      binding.inRequestScope();
-      break;
-    case "Singleton":
-      binding.inSingletonScope();
-      break;
-  }
+  const scopeMethodKeys: Record<
+    interfaces.BindingScope,
+    keyof interfaces.BindingInSyntax<any>
+  > = {
+    Transient: "inTransientScope",
+    Request: "inRequestScope",
+    Singleton: "inSingletonScope",
+  };
+
+  binding[scopeMethodKeys[scope]]();
 }
