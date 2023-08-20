@@ -88,7 +88,7 @@ Why can't we Inversify users organize our dependencies in such an elegant way?
 
 This is how we have to write the same code in Inversify, with these 3 disadvantages:
 
-- Your have to manage all the instantiated containers separately to scope the dependencies into modules.
+- Your have to manage all the instantiated containers separately to scope the dependencies into modules (to build a hierarchical dependency system).
 - Containers are initialized at the time the files that declare them are first imported.
 - There is no single entry point to initialize all the containers.
 

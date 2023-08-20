@@ -1,11 +1,12 @@
 import { Constructor } from "../types";
-import ModuleMetadata, { moduleMetadataKeys } from "../types/ModuleMetadata";
+import ModuleMetadata from "../types/ModuleMetadata";
+import { MODULE_METADATA_KEYS } from "./constants";
 import getAllMetadata from "./getAllMetadata";
 
 export default function getModuleContainer(Module: Constructor) {
   const metadata = getAllMetadata<ModuleMetadata>(
     Module.prototype,
-    moduleMetadataKeys
+    MODULE_METADATA_KEYS
   );
 
   return metadata.container;

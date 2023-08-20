@@ -1,27 +1,35 @@
-import { Container, injectable } from "inversify";
-import bindProvider from "../../../src/utils/bindProvider";
+import { injectable } from "inversify";
 import {
   ClassProvider,
   ConstructorProvider,
   FactoryProvider,
   ValueProvider,
 } from "../../../src/types/Provider";
+import { getModuleContainer, module } from "../../../src";
+import { bindProviderToModule } from "../../../src/utils/bindProvider";
 
 const TestClassToken = Symbol();
 
 @injectable()
 class TestClass {}
 
-describe("bindProvider", () => {
-  const container = new Container();
+@module({})
+class TestModule {}
 
+describe("bindProvider", () => {
   beforeEach(() => {
-    container.unbindAll();
+    getModuleContainer(TestModule).unbindAll();
   });
 
   it("Should bind a ConstructorProvider", () => {
     const provider: ConstructorProvider = TestClass;
-    bindProvider(provider, container);
+
+    @module({})
+    class TestModule {}
+
+    bindProviderToModule(provider, TestModule);
+
+    const container = getModuleContainer(TestModule);
 
     expect(container.isBound(TestClass)).toBe(true);
   });
@@ -29,7 +37,9 @@ describe("bindProvider", () => {
   it("Should bind a ClassProvider without provide", () => {
     const provider: ClassProvider = { useClass: TestClass };
 
-    bindProvider(provider, container);
+    bindProviderToModule(provider, TestModule);
+
+    const container = getModuleContainer(TestModule);
 
     expect(container.isBound(TestClass)).toBe(true);
   });
@@ -40,7 +50,9 @@ describe("bindProvider", () => {
       useClass: TestClass,
     };
 
-    bindProvider(provider, container);
+    bindProviderToModule(provider, TestModule);
+
+    const container = getModuleContainer(TestModule);
 
     expect(container.isBound(TestClassToken)).toBe(true);
   });
@@ -51,7 +63,9 @@ describe("bindProvider", () => {
       useValue: new TestClass(),
     };
 
-    bindProvider(provider, container);
+    bindProviderToModule(provider, TestModule);
+
+    const container = getModuleContainer(TestModule);
 
     expect(container.isBound(TestClassToken)).toBe(true);
   });
@@ -62,7 +76,9 @@ describe("bindProvider", () => {
       useFactory: () => () => new TestClass(),
     };
 
-    bindProvider(provider, container);
+    bindProviderToModule(provider, TestModule);
+
+    const container = getModuleContainer(TestModule);
 
     expect(container.isBound(TestClassToken)).toBe(true);
   });

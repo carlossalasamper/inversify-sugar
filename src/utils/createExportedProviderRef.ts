@@ -4,7 +4,8 @@ import ExportedProvider, {
   TokenExportedProvider,
 } from "../types/ExportedProvider";
 import ExportedProviderRef from "../types/ExportedProviderRef";
-import ModuleMetadata, { moduleMetadataKeys } from "../types/ModuleMetadata";
+import ModuleMetadata from "../types/ModuleMetadata";
+import { MODULE_METADATA_KEYS } from "./constants";
 import getAllMetadata from "./getAllMetadata";
 import messagesMap from "./messagesMap";
 import isDetailedExportedProvider from "./validation/isDetailedExportedProvider";
@@ -16,7 +17,7 @@ export default function createExportedProviderRef(
 ): ExportedProviderRef[] {
   const metadata = getAllMetadata<ModuleMetadata>(
     Module.prototype,
-    moduleMetadataKeys
+    MODULE_METADATA_KEYS
   );
   const exportedProviderRefs: ExportedProviderRef[] = [];
 
@@ -29,7 +30,11 @@ export default function createExportedProviderRef(
     const getValue = () => {
       return detailedExportedProvider.deep
         ? metadata.container.getAll(detailedExportedProvider.provide)
-        : metadata.container.getAll(detailedExportedProvider.provide); // TODO: get only current container bindings
+        : metadata.container.getAllTagged(
+            detailedExportedProvider.provide,
+            "module",
+            metadata.id
+          );
     };
 
     if (isBound) {
@@ -50,7 +55,7 @@ export default function createExportedProviderRef(
     const tokenExportedProvider = exportedProvider as TokenExportedProvider;
     const isBound = metadata.container.isBound(tokenExportedProvider);
     const getValue = () => {
-      return metadata.container.get(tokenExportedProvider);
+      return metadata.container.getNamed(tokenExportedProvider, metadata.id);
     };
 
     if (isBound) {

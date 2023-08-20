@@ -1,9 +1,8 @@
-import { module } from "../../../src";
-import ModuleMetadata, {
-  moduleMetadataKeys,
-} from "../../../src/types/ModuleMetadata";
-import getAllMetadata from "../../../src/utils/getAllMetadata";
 import { Container } from "inversify";
+import { module } from "../../../src";
+import ModuleMetadata from "../../../src/types/ModuleMetadata";
+import { MODULE_METADATA_KEYS } from "../../../src/utils/constants";
+import getAllMetadata from "../../../src/utils/getAllMetadata";
 
 @module({})
 class EmptyMetadataModule {}
@@ -14,11 +13,11 @@ describe("@module", () => {
   it("Should generate correct metadata from empty args.", () => {
     const metadata = getAllMetadata<ModuleMetadata>(
       EmptyMetadataModule.prototype,
-      moduleMetadataKeys
+      MODULE_METADATA_KEYS
     );
 
     expect(metadata).toMatchObject<
-      Omit<ModuleMetadata, "container" | "exportsContainer">
+      Omit<ModuleMetadata, "id" | "container" | "onlyProvidersContainer">
     >({
       isModule: true,
       isBinded: false,
@@ -54,7 +53,7 @@ describe("@module", () => {
 
     const metadata = getAllMetadata<ModuleMetadata>(
       ProvidersModule.prototype,
-      moduleMetadataKeys
+      MODULE_METADATA_KEYS
     );
 
     expect(metadata.providers).toHaveLength(1);

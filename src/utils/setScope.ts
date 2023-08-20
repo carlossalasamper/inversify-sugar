@@ -15,5 +15,5 @@ export default function setScope(
     Singleton: "inSingletonScope",
   };
 
-  binding[scopeMethodKeys[scope]]();
+  return binding[scopeMethodKeys[scope]]();
 }

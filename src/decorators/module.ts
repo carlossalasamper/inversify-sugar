@@ -17,9 +17,11 @@ export default function module({
       (provider: any) => !!provider.isGlobal
     );
     const metadata: ModuleMetadata = {
+      id: new Date().getTime(),
       isModule: true,
       isBinded: false,
       container: new Container(),
+      onlyProvidersContainer: new Container(),
       imports,
       providers: scopedProviders,
       globalProviders,

@@ -167,7 +167,7 @@ describe("importModule", () => {
     ).toBeInstanceOf(AService);
   });
 
-  it("Should resolve dependencies of MultiExportedProvider.", () => {
+  it("Should resolve dependencies of DetailedExportedProvider multiple.", () => {
     const ProviderToken = Symbol("ProviderToken");
 
     @injectable()
@@ -316,5 +316,34 @@ describe("importModule", () => {
 
     expect(getModuleContainer(AModule).isBound(TestService)).toBe(true);
     expect(getModuleContainer(BModule).isBound(TestService)).toBe(true);
+  });
+
+  it("Exported providers of a imported module shouldn't be bound to the RootContainer container when deep = false.", () => {
+    @module({
+      providers: [TestService],
+      exports: [TestService],
+    })
+    class ExportedServiceModule {}
+
+    @module({
+      imports: [ExportedServiceModule],
+      providers: [TestService],
+      exports: [
+        {
+          provide: TestService,
+          deep: false,
+        },
+      ],
+    })
+    class AModule {}
+
+    @module({
+      imports: [AModule],
+    })
+    class RootModule {}
+
+    importModule(RootModule, false);
+
+    expect(getModuleContainer(RootModule).get(TestService)).toHaveLength(1);
   });
 });

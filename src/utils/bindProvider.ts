@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Container } from "inversify";
 import Provider, {
   ClassProvider,
   ConstructorProvider,
@@ -11,8 +10,69 @@ import isClassProvider from "./validation/isClassProvider";
 import isValueProvider from "./validation/isValueProvider";
 import isFactoryProvider from "./validation/isFactoryProvider";
 import setScope from "./setScope";
+import { Constructor } from "../types";
+import getAllMetadata from "./getAllMetadata";
+import ModuleMetadata from "../types/ModuleMetadata";
+import { MODULE_METADATA_KEYS } from "./constants";
+import { Container } from "inversify";
 
-const bindProvider = (provider: Provider, container: Container) => {
+export const bindProviderToModule = (
+  provider: Provider,
+  Module: Constructor
+) => {
+  const metatadata = getAllMetadata<ModuleMetadata>(
+    Module.prototype,
+    MODULE_METADATA_KEYS
+  );
+  const { container, id } = metatadata;
+
+  if (isConstructorProvider(provider)) {
+    const constructorProvider = provider as ConstructorProvider;
+
+    setScope(container.bind(constructorProvider).toSelf());
+    setScope(container.bind(constructorProvider).toSelf()).whenTargetNamed(id);
+  } else if (isClassProvider(provider)) {
+    const classProvider = provider as ClassProvider;
+    setScope(
+      classProvider.provide
+        ? container.bind(classProvider.provide).to(classProvider.useClass)
+        : container.bind(classProvider.useClass).toSelf(),
+      classProvider.scope
+    );
+    setScope(
+      classProvider.provide
+        ? container.bind(classProvider.provide).to(classProvider.useClass)
+        : container.bind(classProvider.useClass).toSelf(),
+      classProvider.scope
+    ).whenTargetNamed(id);
+  } else if (isValueProvider(provider)) {
+    const valueProvider = provider as ValueProvider;
+
+    container
+      .bind(valueProvider.provide)
+      .toConstantValue(valueProvider.useValue);
+
+    container
+      .bind(valueProvider.provide)
+      .toConstantValue(valueProvider.useValue)
+      .whenTargetNamed(id);
+  } else if (isFactoryProvider(provider)) {
+    const factoryProvider = provider as FactoryProvider;
+
+    container
+      .bind(factoryProvider.provide)
+      .toFactory(factoryProvider.useFactory);
+    container
+      .bind(factoryProvider.provide)
+      .toFactory(factoryProvider.useFactory)
+      .whenTargetNamed(id);
+  }
+};
+
+export const bindProviderToContainer = (
+  provider: Provider,
+  container: Container
+) => {
   if (isConstructorProvider(provider)) {
     const constructorProvider = provider as ConstructorProvider;
 
@@ -27,15 +87,15 @@ const bindProvider = (provider: Provider, container: Container) => {
     );
   } else if (isValueProvider(provider)) {
     const valueProvider = provider as ValueProvider;
+
     container
       .bind(valueProvider.provide)
       .toConstantValue(valueProvider.useValue);
   } else if (isFactoryProvider(provider)) {
     const factoryProvider = provider as FactoryProvider;
+
     container
       .bind(factoryProvider.provide)
       .toFactory(factoryProvider.useFactory);
   }
 };
-
-export default bindProvider;

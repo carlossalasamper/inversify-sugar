@@ -1,4 +1,3 @@
-import { Container } from "inversify";
 import { Constructor } from "../types";
 import importModule from "./importModule";
 import ModuleMetadata from "../types/ModuleMetadata";
@@ -6,6 +5,7 @@ import messagesMap from "./messagesMap";
 import InversifySugarState from "../types/InversifySugarState";
 import InversifySugarOptions from "../types/InversifySugarOptions";
 import unbindModule from "./unbindModule";
+import { Container } from "inversify";
 
 /**
  * @description InversifySugar is a utility class that helps you to bootstrap inversify and configure it.

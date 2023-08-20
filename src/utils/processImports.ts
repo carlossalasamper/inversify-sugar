@@ -1,8 +1,8 @@
-import { Container } from "inversify";
 import ExportedProviderRef from "../types/ExportedProviderRef";
 import { Constructor } from "../types";
 import importModule from "./importModule";
 import bindExportedProviderRef from "./bindExportedProviderRef";
+import { Container } from "inversify";
 
 /**
  * @description This function is used to process imports.

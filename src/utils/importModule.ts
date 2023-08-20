@@ -1,16 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import getAllMetadata from "./getAllMetadata";
-import bindProvider from "./bindProvider";
-import ModuleMetadata, {
-  isBindedKey,
-  moduleMetadataKeys,
-} from "../types/ModuleMetadata";
+import ModuleMetadata from "../types/ModuleMetadata";
 import { Constructor } from "../types";
 import InversifySugar from "./InversifySugar";
 import messagesMap from "./messagesMap";
 import ExportedProviderRef from "../types/ExportedProviderRef";
 import createExportedProviderRef from "./createExportedProviderRef";
 import processImports from "./processImports";
+import { MODULE_IS_BINDED_KEY, MODULE_METADATA_KEYS } from "./constants";
+import { bindProviderToContainer, bindProviderToModule } from "./bindProvider";
 
 export default function importModule(
   Module: Constructor,
@@ -18,7 +16,7 @@ export default function importModule(
 ): ExportedProviderRef[] {
   const metadata = getAllMetadata<ModuleMetadata>(
     Module.prototype,
-    moduleMetadataKeys
+    MODULE_METADATA_KEYS
   );
   const exportedProviders: ExportedProviderRef[] = [];
 
@@ -29,7 +27,7 @@ export default function importModule(
       exportedProviders.push(...importChildModule(Module));
     }
 
-    Reflect.defineMetadata(isBindedKey, true, Module.prototype);
+    Reflect.defineMetadata(MODULE_IS_BINDED_KEY, true, Module.prototype);
   } else {
     console.warn(messagesMap.notAModuleImported(Module.name));
   }
@@ -45,12 +43,16 @@ export default function importModule(
 function importRootModule(Module: Constructor) {
   const metadata = getAllMetadata<ModuleMetadata>(
     Module.prototype,
-    moduleMetadataKeys
+    MODULE_METADATA_KEYS
   );
 
   if (!metadata.isBinded) {
     for (const provider of metadata.providers) {
-      bindProvider(provider, InversifySugar.globalContainer);
+      bindProviderToContainer(provider, InversifySugar.globalContainer);
+    }
+
+    for (const provider of metadata.globalProviders) {
+      bindProviderToContainer(provider, InversifySugar.globalContainer);
     }
 
     processImports(metadata.container, metadata.imports);
@@ -64,17 +66,17 @@ function importRootModule(Module: Constructor) {
 function importChildModule(Module: Constructor) {
   const metadata = getAllMetadata<ModuleMetadata>(
     Module.prototype,
-    moduleMetadataKeys
+    MODULE_METADATA_KEYS
   );
   const exportedProviderRefs: ExportedProviderRef[] = [];
 
   if (!metadata.isBinded) {
     for (const provider of metadata.providers) {
-      bindProvider(provider, metadata.container);
+      bindProviderToModule(provider, Module);
     }
 
     for (const provider of metadata.globalProviders) {
-      bindProvider(provider, InversifySugar.globalContainer);
+      bindProviderToContainer(provider, InversifySugar.globalContainer);
     }
 
     processImports(metadata.container, metadata.imports);
