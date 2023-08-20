@@ -47,11 +47,9 @@ function importRootModule(Module: Constructor) {
   );
 
   if (!metadata.isBinded) {
-    for (const provider of metadata.providers) {
-      bindProviderToContainer(provider, InversifySugar.globalContainer);
-    }
-
-    for (const provider of metadata.globalProviders) {
+    for (const provider of metadata.providers.concat(
+      ...metadata.globalProviders
+    )) {
       bindProviderToContainer(provider, InversifySugar.globalContainer);
     }
 

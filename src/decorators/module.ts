@@ -21,7 +21,6 @@ export default function module({
       isModule: true,
       isBinded: false,
       container: new Container(),
-      onlyProvidersContainer: new Container(),
       imports,
       providers: scopedProviders,
       globalProviders,

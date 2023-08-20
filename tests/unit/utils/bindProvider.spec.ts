@@ -1,4 +1,4 @@
-import { injectable } from "inversify";
+import { Container, injectable } from "inversify";
 import {
   ClassProvider,
   ConstructorProvider,
@@ -6,7 +6,10 @@ import {
   ValueProvider,
 } from "../../../src/types/Provider";
 import { getModuleContainer, module } from "../../../src";
-import { bindProviderToModule } from "../../../src/utils/bindProvider";
+import {
+  bindProviderToContainer,
+  bindProviderToModule,
+} from "../../../src/utils/bindProvider";
 
 const TestClassToken = Symbol();
 
@@ -79,6 +82,61 @@ describe("bindProvider", () => {
     bindProviderToModule(provider, TestModule);
 
     const container = getModuleContainer(TestModule);
+
+    expect(container.isBound(TestClassToken)).toBe(true);
+  });
+
+  it("Should bind a ConstructorProvider to a container", () => {
+    const provider: ConstructorProvider = TestClass;
+    const container = new Container();
+
+    bindProviderToContainer(provider, container);
+
+    expect(container.isBound(TestClass)).toBe(true);
+  });
+
+  it("Should bind a ClassProvider without provide to a container", () => {
+    const provider: ClassProvider = { useClass: TestClass };
+    const container = new Container();
+
+    bindProviderToContainer(provider, container);
+
+    expect(container.isBound(TestClass)).toBe(true);
+  });
+
+  it("Should bind a ClassProvider with provide to a container", () => {
+    const provider: ClassProvider = {
+      provide: TestClassToken,
+      useClass: TestClass,
+    };
+
+    const container = new Container();
+
+    bindProviderToContainer(provider, container);
+
+    expect(container.isBound(TestClassToken)).toBe(true);
+  });
+
+  it("Should bind a ValueProvider to a container", () => {
+    const provider: ValueProvider = {
+      provide: TestClassToken,
+      useValue: new TestClass(),
+    };
+    const container = new Container();
+
+    bindProviderToContainer(provider, container);
+
+    expect(container.isBound(TestClassToken)).toBe(true);
+  });
+
+  it("Should bind a FactoryProvider to a container", () => {
+    const provider: FactoryProvider = {
+      provide: TestClassToken,
+      useFactory: () => () => new TestClass(),
+    };
+    const container = new Container();
+
+    bindProviderToContainer(provider, container);
 
     expect(container.isBound(TestClassToken)).toBe(true);
   });

@@ -29,16 +29,13 @@ export const bindProviderToModule = (
   if (isConstructorProvider(provider)) {
     const constructorProvider = provider as ConstructorProvider;
 
-    setScope(container.bind(constructorProvider).toSelf());
+    setScope(
+      container.bind(constructorProvider).toSelf()
+    ).whenTargetIsDefault();
     setScope(container.bind(constructorProvider).toSelf()).whenTargetNamed(id);
   } else if (isClassProvider(provider)) {
     const classProvider = provider as ClassProvider;
-    setScope(
-      classProvider.provide
-        ? container.bind(classProvider.provide).to(classProvider.useClass)
-        : container.bind(classProvider.useClass).toSelf(),
-      classProvider.scope
-    );
+
     setScope(
       classProvider.provide
         ? container.bind(classProvider.provide).to(classProvider.useClass)
@@ -50,18 +47,10 @@ export const bindProviderToModule = (
 
     container
       .bind(valueProvider.provide)
-      .toConstantValue(valueProvider.useValue);
-
-    container
-      .bind(valueProvider.provide)
       .toConstantValue(valueProvider.useValue)
       .whenTargetNamed(id);
   } else if (isFactoryProvider(provider)) {
     const factoryProvider = provider as FactoryProvider;
-
-    container
-      .bind(factoryProvider.provide)
-      .toFactory(factoryProvider.useFactory);
     container
       .bind(factoryProvider.provide)
       .toFactory(factoryProvider.useFactory)

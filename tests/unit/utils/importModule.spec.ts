@@ -346,4 +346,69 @@ describe("importModule", () => {
 
     expect(getModuleContainer(RootModule).get(TestService)).toHaveLength(1);
   });
+
+  it("Exported providers of a imported module should be bound to the RootContainer container when deep = true.", () => {
+    const ProviderToken = Symbol("ProviderToken");
+
+    @injectable()
+    class AService {
+      public readonly name = "AService";
+    }
+
+    @injectable()
+    class BService {
+      public readonly name = "BService";
+    }
+
+    @module({
+      providers: [
+        {
+          provide: ProviderToken,
+          useClass: AService,
+        },
+      ],
+      exports: [ProviderToken],
+    })
+    class AModule {}
+
+    @module({
+      imports: [AModule],
+      providers: [
+        {
+          provide: ProviderToken,
+          useClass: BService,
+        },
+      ],
+      exports: [
+        {
+          provide: ProviderToken,
+          deep: true,
+        },
+      ],
+    })
+    class BModule {}
+
+    @module({
+      providers: [
+        {
+          provide: ProviderToken,
+          useValue: "VALUE",
+        },
+      ],
+      exports: [ProviderToken],
+    })
+    class CModule {}
+
+    @module({
+      imports: [BModule, CModule],
+    })
+    class RootModule {}
+
+    importModule(RootModule, false);
+
+    const container = getModuleContainer(RootModule);
+    const exportedServices = container.get(ProviderToken);
+
+    expect(exportedServices).toHaveLength(3);
+  });
 });

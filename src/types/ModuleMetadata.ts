@@ -32,7 +32,6 @@ export default interface ModuleMetadata {
   isModule: true;
   isBinded: boolean;
   container: Container;
-  onlyProvidersContainer: Container;
   imports: Constructor[];
   providers: Provider[];
   globalProviders: Provider[];

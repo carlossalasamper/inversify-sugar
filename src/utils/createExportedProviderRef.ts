@@ -30,9 +30,8 @@ export default function createExportedProviderRef(
     const getValue = () => {
       return detailedExportedProvider.deep
         ? metadata.container.getAll(detailedExportedProvider.provide)
-        : metadata.container.getAllTagged(
+        : metadata.container.getAllNamed(
             detailedExportedProvider.provide,
-            "module",
             metadata.id
           );
     };

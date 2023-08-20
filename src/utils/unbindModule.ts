@@ -12,7 +12,6 @@ export default function unbindModule(Module: Constructor) {
 
   if (metadata.isBinded) {
     metadata.container.unbindAll();
-    metadata.onlyProvidersContainer.unbindAll();
     metadata.isBinded = false;
   }
 

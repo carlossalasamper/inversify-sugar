@@ -6,7 +6,7 @@ import { Container } from "inversify";
 
 /**
  * @description This function is used to process imports.
- * It will group all imported providers from different modules with the same provider.
+ * It will group all imported providers from different modules with the same 'provide' property.
  * Then you can inject them as an array.
  */
 export default function processImports(
