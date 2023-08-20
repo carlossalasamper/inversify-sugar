@@ -208,25 +208,33 @@ You can now start injecting your dependencies where you need them.
 
 Let's not forget that Inversify Sugar works on top of Inversify, so to understand what's going on behind the scenes, we'll be referencing [the original Inversify documentation](https://inversify.io/) throughout this guide.
 
-We also recommend having the original documentation on hand in order to report malfunctions in this library or the lack of any of the Inversify features.
-
 Below you will find a detailed explanation of each of the concepts that this library handles together with different use examples and its public API.
 
 ### Modules
 
-// TODO
+A module is a class annotated with a `@module()` decorator. The `@module()` decorator provides metadata that is used to organize the dependency system.
+
+Each application has at least one module, a root module. The root module is normally called `AppModule` and is the starting point used to build the dependencies tree. While very small applications may theoretically have just the root module, for most applications, the resulting architecture will employ multiple modules, each encapsulating a closely related set of capabilities.
+
+The module decorator accepts an object argument with the `imports`, `providers` and `exports` properties.
+
+Next we will explain what each of these properties is for.
 
 #### Imports
 
-// TODO
+The list of imported modules that export the providers which are required in this module.
 
 #### Providers
 
-// TODO
+The providers that will be instantiated when the module is registered. These providers may be shared at least across this module.
+
+You can define a provider in different ways depending on the desired instantiation behavior.
 
 #### Exports
 
-// TODO
+The subset of providers that are provided by this module and should be available in other modules which import this module. You can use either a ExportedProvider object or just its token (provide value).
+
+If you export a provider with an injection token that is not found in the module's dependency container, an error will be thrown.
 
 #### Get the Container of a Module
 
