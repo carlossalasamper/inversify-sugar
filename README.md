@@ -216,6 +216,37 @@ A module is a class annotated with a `@module()` decorator. The `@module()` deco
 
 Each application has at least one module, a root module. The root module is normally called `AppModule` and is the starting point used to build the dependencies tree. While very small applications may theoretically have just the root module, for most applications, the resulting architecture will employ multiple modules, each encapsulating a closely related set of capabilities.
 
+```typescript
+import { module } from "inversify-sugar";
+import CatsModule from "./cats/CatsModule";
+import DogsModule from "./dogs/DogsModule";
+import BirdsModule from "./birds/BirdsModule";
+
+@module({
+  imports: [CatsModule, DogsModule, BirdsModule],
+  providers: [],
+  exports: [],
+})
+export class AppModule {}
+```
+
+The relationship between modules would be as follows:
+
+<div align="center">
+<img src="./assets/images/inversify-sugar-modules.png" style="max-width: 900px; width: 100%;">
+</div>
+
+</br>
+
+Once `AppModule` is defined, we will only have to call the `InversifySugar.run` method specifying the root module:
+
+```typescript
+import { InversifySugar } from "inversify-sugar";
+import { AppModule } from "./AppModule";
+
+InversifySugar.run(AppModule);
+```
+
 The module decorator accepts an object argument with the `imports`, `providers` and `exports` properties.
 
 Next we will explain what each of these properties is for.

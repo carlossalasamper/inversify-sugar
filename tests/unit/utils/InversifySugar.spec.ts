@@ -1,4 +1,10 @@
-import { Constructor, InversifySugar, module } from "../../../src";
+import { inject, injectable } from "inversify";
+import {
+  Constructor,
+  InversifySugar,
+  getModuleContainer,
+  module,
+} from "../../../src";
 import messagesMap from "../../../src/utils/messagesMap";
 
 @module({})
@@ -21,7 +27,7 @@ describe("InversifySugar", () => {
   );
   const onModuleImported = jest.fn();
 
-  beforeAll(() => {
+  beforeEach(() => {
     InversifySugar.reset();
     InversifySugar.setOnModuleImported(onModuleImported);
     InversifySugar.options.debug = true;
@@ -52,5 +58,50 @@ describe("InversifySugar", () => {
   it("Should reset InversifySugar even if its nto running", () => {
     InversifySugar.reset();
     expect(() => InversifySugar.run(AppModule)).not.toThrow();
+  });
+
+  it("Should resolve all dependencies in a complicated escenary", () => {
+    const IUserRepositoryToken = Symbol("IUserRepository");
+    @injectable()
+    class UserRepository {}
+
+    @injectable()
+    class AuthUseCase {
+      constructor(
+        @inject(IUserRepositoryToken)
+        public readonly userRepository: UserRepository
+      ) {}
+    }
+    @injectable()
+    class AuthService {
+      constructor(
+        @inject(AuthUseCase)
+        public readonly useCase: AuthUseCase
+      ) {}
+    }
+
+    @module({
+      providers: [{ useClass: UserRepository, provide: IUserRepositoryToken }],
+      exports: [IUserRepositoryToken],
+    })
+    class UserModule {}
+
+    @module({
+      imports: [UserModule],
+      providers: [AuthService, AuthUseCase],
+      exports: [AuthService],
+    })
+    class AuthModule {}
+
+    @module({
+      imports: [AuthModule, UserModule],
+    })
+    class AppModule {}
+
+    InversifySugar.run(AppModule);
+
+    const container = getModuleContainer(AppModule);
+
+    expect(container.get(AuthService)).toBeInstanceOf(AuthService);
   });
 });

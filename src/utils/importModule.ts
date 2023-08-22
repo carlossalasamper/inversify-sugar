@@ -69,6 +69,8 @@ function importChildModule(Module: Constructor) {
   const exportedProviderRefs: ExportedProviderRef[] = [];
 
   if (!metadata.isBinded) {
+    processImports(metadata.container, metadata.imports);
+
     for (const provider of metadata.providers) {
       bindProviderToModule(provider, Module);
     }
@@ -77,7 +79,7 @@ function importChildModule(Module: Constructor) {
       bindProviderToContainer(provider, InversifySugar.globalContainer);
     }
 
-    processImports(metadata.container, metadata.imports);
+    InversifySugar.onModuleImported(metadata.container, metadata, Module);
   }
 
   for (const exportedProvider of metadata.exports) {
@@ -85,8 +87,6 @@ function importChildModule(Module: Constructor) {
       ...createExportedProviderRef(Module, exportedProvider)
     );
   }
-
-  InversifySugar.onModuleImported(metadata.container, metadata, Module);
 
   return exportedProviderRefs;
 }

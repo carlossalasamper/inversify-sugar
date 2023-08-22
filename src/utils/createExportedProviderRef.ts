@@ -24,9 +24,12 @@ export default function createExportedProviderRef(
   if (isDetailedExportedProvider(exportedProvider)) {
     const detailedExportedProvider =
       exportedProvider as DetailedExportedProvider;
-    const isBound = metadata.container.isBound(
-      detailedExportedProvider.provide
-    );
+    const isBound = detailedExportedProvider.deep
+      ? metadata.container.isBound(detailedExportedProvider.provide)
+      : metadata.container.isBoundNamed(
+          detailedExportedProvider.provide,
+          metadata.id
+        );
     const getValue = () => {
       return detailedExportedProvider.deep
         ? metadata.container.getAll(detailedExportedProvider.provide)

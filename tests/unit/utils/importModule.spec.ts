@@ -150,7 +150,7 @@ describe("importModule", () => {
     }
 
     @module({
-      providers: [TestService, AService],
+      providers: [AService, TestService],
       exports: [TestService],
     })
     class ExportedServiceModule {}
@@ -162,9 +162,9 @@ describe("importModule", () => {
 
     importModule(RootModule, true);
 
-    expect(
-      getModuleContainer(RootModule).get(TestService).aService
-    ).toBeInstanceOf(AService);
+    const container = getModuleContainer(RootModule);
+
+    expect(container.get(TestService).aService).toBeInstanceOf(AService);
   });
 
   it("Should resolve dependencies of DetailedExportedProvider multiple.", () => {
