@@ -1,5 +1,5 @@
 import ExportedProviderRef from "../types/ExportedProviderRef";
-import { Constructor } from "../types";
+import { Newable } from "../types";
 import importModule from "./importModule";
 import bindExportedProviderRef from "./bindExportedProviderRef";
 import { Container } from "inversify";
@@ -11,7 +11,7 @@ import { Container } from "inversify";
  */
 export default function processImports(
   container: Container,
-  imports: Constructor[]
+  imports: Newable[]
 ): ExportedProviderRef[] {
   const allRefs: ExportedProviderRef[] = [];
   const reducedRefs: ExportedProviderRef[] = [];

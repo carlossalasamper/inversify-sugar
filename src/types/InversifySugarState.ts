@@ -1,8 +1,8 @@
 import { Container } from "inversify";
-import Constructor from "./Constructor";
+import Newable from "./Newable";
 
 export default interface InversifySugarState {
   isRunning: boolean;
   globalContainer: Container;
-  rootModule?: Constructor;
+  rootModule?: Newable;
 }

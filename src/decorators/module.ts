@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Container } from "inversify";
-import { Constructor } from "../types";
+import { Newable } from "../types";
 import ModuleMetadata, { ModuleMetadataArgs } from "../types/ModuleMetadata";
 import { InversifySugar } from "../utils";
+import loggerMiddleware from "../middlewares/loggerMiddleware";
 
 export default function module({
   imports = [],
   providers = [],
   exports = [],
 }: ModuleMetadataArgs) {
-  return (target: Constructor) => {
+  return (target: Newable) => {
     const scopedProviders = providers.filter(
       (provider: any) => !provider.isGlobal
     );
@@ -28,6 +29,7 @@ export default function module({
     };
 
     metadata.container.parent = InversifySugar.globalContainer;
+    metadata.container.applyMiddleware(loggerMiddleware);
 
     for (const key in metadata) {
       if (metadata.hasOwnProperty(key)) {

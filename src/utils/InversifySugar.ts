@@ -1,43 +1,33 @@
-import { Constructor } from "../types";
+import { Newable } from "../types";
 import importModule from "./importModule";
 import ModuleMetadata from "../types/ModuleMetadata";
 import messagesMap from "./messagesMap";
 import InversifySugarState from "../types/InversifySugarState";
-import InversifySugarOptions from "../types/InversifySugarOptions";
 import unbindModule from "./unbindModule";
 import { Container } from "inversify";
+import inversifySugarOptions, {
+  defaultInverseSugarOptions,
+} from "./inversifySugarOptions";
+import { loggerMiddleware } from "../middlewares";
 
 /**
  * @description InversifySugar is a utility class that helps you to bootstrap inversify and configure it.
  */
 export default class InversifySugar {
-  public static get defaultOptions(): InversifySugarOptions {
-    return {
-      debug: false,
-      defaultScope: "Transient",
-      onModuleImported: undefined,
-    };
-  }
-
-  public static readonly options: InversifySugarOptions = Object.assign(
-    {},
-    InversifySugar.defaultOptions
-  );
-
-  private static state: InversifySugarState = {
+  private static readonly state: InversifySugarState = {
     isRunning: false,
     globalContainer: new Container(),
     rootModule: undefined,
   };
 
-  static get globalContainer() {
+  public static get globalContainer() {
     return InversifySugar.state.globalContainer;
   }
 
   /**
    * @description This method is used to bootstrap inversify and import the AppModule.
    */
-  static run(AppModule: Constructor) {
+  public static run(AppModule: Newable) {
     if (InversifySugar.state.isRunning) {
       throw new Error(messagesMap.alreadyRunning);
     }
@@ -62,17 +52,17 @@ export default class InversifySugar {
       rootModule: undefined,
     });
 
-    Object.assign(InversifySugar.options, InversifySugar.defaultOptions);
+    Object.assign(inversifySugarOptions, defaultInverseSugarOptions);
   }
 
   static onModuleImported(
     container: Container,
     metadata: ModuleMetadata,
-    Module: Constructor
+    Module: Newable
   ) {
-    InversifySugar.options.onModuleImported?.(container, metadata, Module);
+    inversifySugarOptions.onModuleImported?.(container, metadata, Module);
 
-    if (InversifySugar.options.debug) {
+    if (inversifySugarOptions.debug) {
       console.log(messagesMap.moduleImported(Module.name));
     }
   }
@@ -81,9 +71,11 @@ export default class InversifySugar {
     value: (
       container: Container,
       metadata: ModuleMetadata,
-      Module: Constructor
+      Module: Newable
     ) => void
   ) {
-    InversifySugar.options.onModuleImported = value;
+    inversifySugarOptions.onModuleImported = value;
   }
 }
+
+InversifySugar.globalContainer.applyMiddleware(loggerMiddleware);

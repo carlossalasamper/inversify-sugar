@@ -1,6 +1,6 @@
 import { Container, interfaces } from "inversify";
 import ModuleMetadata from "./ModuleMetadata";
-import Constructor from "./Constructor";
+import Newable from "./Newable";
 
 export default interface InversifySugarOptions {
   /**
@@ -24,7 +24,7 @@ export default interface InversifySugarOptions {
     | ((
         container: Container,
         metadata: ModuleMetadata,
-        Module: Constructor
+        Module: Newable
       ) => void)
     | undefined;
 }

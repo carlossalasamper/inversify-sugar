@@ -8,8 +8,6 @@ import getAllMetadata from "../../../src/utils/getAllMetadata";
 class EmptyMetadataModule {}
 
 describe("@module", () => {
-  const emptyContainer = new Container();
-
   it("Should generate correct metadata from empty args.", () => {
     const metadata = getAllMetadata<ModuleMetadata>(
       EmptyMetadataModule.prototype,
@@ -26,11 +24,6 @@ describe("@module", () => {
     });
 
     expect(metadata.container).toBeInstanceOf(Container);
-    expect({
-      ...metadata.container,
-      id: emptyContainer.id,
-      parent: null,
-    }).toMatchObject(emptyContainer);
   });
 
   it("Should separate scoped and global providers.", () => {

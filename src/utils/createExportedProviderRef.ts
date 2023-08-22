@@ -1,4 +1,4 @@
-import { Constructor } from "../types";
+import { Newable } from "../types";
 import ExportedProvider, {
   DetailedExportedProvider,
   TokenExportedProvider,
@@ -12,7 +12,7 @@ import isDetailedExportedProvider from "./validation/isDetailedExportedProvider"
 import isTokenExportedProvider from "./validation/isTokenExportedProvider";
 
 export default function createExportedProviderRef(
-  Module: Constructor,
+  Module: Newable,
   exportedProvider: ExportedProvider
 ): ExportedProviderRef[] {
   const metadata = getAllMetadata<ModuleMetadata>(

@@ -10,16 +10,13 @@ import isClassProvider from "./validation/isClassProvider";
 import isValueProvider from "./validation/isValueProvider";
 import isFactoryProvider from "./validation/isFactoryProvider";
 import setScope from "./setScope";
-import { Constructor } from "../types";
+import { Newable } from "../types";
 import getAllMetadata from "./getAllMetadata";
 import ModuleMetadata from "../types/ModuleMetadata";
 import { MODULE_METADATA_KEYS } from "./constants";
 import { Container } from "inversify";
 
-export const bindProviderToModule = (
-  provider: Provider,
-  Module: Constructor
-) => {
+export const bindProviderToModule = (provider: Provider, Module: Newable) => {
   const metatadata = getAllMetadata<ModuleMetadata>(
     Module.prototype,
     MODULE_METADATA_KEYS

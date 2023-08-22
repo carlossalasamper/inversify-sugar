@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { interfaces } from "inversify";
-import InversifySugar from "./InversifySugar";
+import inversifySugarOptions from "./inversifySugarOptions";
 
 export default function setScope(
   binding: interfaces.BindingInWhenOnSyntax<any>,
-  scope: interfaces.BindingScope = InversifySugar.options.defaultScope
+  scope: interfaces.BindingScope = inversifySugarOptions.defaultScope
 ) {
   const scopeMethodKeys: Record<
     interfaces.BindingScope,

@@ -1,10 +1,10 @@
-import { Constructor } from "../types";
+import { Newable } from "../types";
 import ModuleMetadata from "../types/ModuleMetadata";
 import { IS_MODULE_KEY, MODULE_METADATA_KEYS } from "./constants";
 import getAllMetadata from "./getAllMetadata";
 import messagesMap from "./messagesMap";
 
-export default function unbindModule(Module: Constructor) {
+export default function unbindModule(Module: Newable) {
   const metadata = getAllMetadata<ModuleMetadata>(
     Module.prototype,
     MODULE_METADATA_KEYS

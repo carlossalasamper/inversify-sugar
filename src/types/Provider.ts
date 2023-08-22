@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { interfaces } from "inversify";
-import { Constructor } from ".";
+import { Newable } from ".";
 
 interface WithProvide {
   /**
@@ -19,7 +19,7 @@ interface WithIsGlobal {
 /**
  * Shorthand to define a *Class* provider to self in singleton scope.
  */
-export type ConstructorProvider<T = any> = Constructor<T>;
+export type ConstructorProvider<T = any> = Newable<T>;
 
 /**
  * @description Interface defining a *Class* type provider.

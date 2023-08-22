@@ -1,6 +1,7 @@
 import setScope from "../../../src/utils/setScope";
 import { InversifySugar } from "../../../src";
 import { Container } from "inversify";
+import inversifySugarOptions from "../../../src/utils/inversifySugarOptions";
 
 class ClassA {}
 
@@ -43,7 +44,7 @@ describe("setScope", () => {
     const binding = container.bind(ClassA).toSelf();
     const inSingletonScope = jest.spyOn(binding, "inSingletonScope");
 
-    InversifySugar.options.defaultScope = "Singleton";
+    inversifySugarOptions.defaultScope = "Singleton";
 
     setScope(binding);
 

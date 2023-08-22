@@ -1,5 +1,5 @@
 import Provider from "./Provider";
-import { Constructor } from ".";
+import { Newable } from ".";
 import ExportedProvider from "./ExportedProvider";
 import { Container } from "inversify";
 
@@ -13,7 +13,7 @@ export interface ModuleMetadataArgs {
    * @description Optional list of submodules defined in this module which have to be
    * registered.
    */
-  imports?: Constructor[];
+  imports?: Newable[];
 
   /**
    * @description Optional list of providers defined in this module which have to be
@@ -32,7 +32,7 @@ export default interface ModuleMetadata {
   isModule: true;
   isBinded: boolean;
   container: Container;
-  imports: Constructor[];
+  imports: Newable[];
   providers: Provider[];
   globalProviders: Provider[];
   exports: ExportedProvider[];

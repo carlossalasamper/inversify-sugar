@@ -1,18 +1,19 @@
 import { inject, injectable } from "inversify";
 import {
-  Constructor,
+  Newable,
   InversifySugar,
   getModuleContainer,
   module,
 } from "../../../src";
 import messagesMap from "../../../src/utils/messagesMap";
+import inversifySugarOptions from "../../../src/utils/inversifySugarOptions";
 
 @module({})
 class ModuleA {}
 @module({})
 class ModuleB {}
 
-const appModuleImports: Constructor[] = [ModuleA, ModuleB];
+const appModuleImports: Newable[] = [ModuleA, ModuleB];
 
 @module({
   imports: appModuleImports,
@@ -30,7 +31,7 @@ describe("InversifySugar", () => {
   beforeEach(() => {
     InversifySugar.reset();
     InversifySugar.setOnModuleImported(onModuleImported);
-    InversifySugar.options.debug = true;
+    inversifySugarOptions.debug = true;
   });
 
   it("InversifySugar.run should be called once.", () => {

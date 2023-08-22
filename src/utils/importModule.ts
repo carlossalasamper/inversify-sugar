@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import getAllMetadata from "./getAllMetadata";
 import ModuleMetadata from "../types/ModuleMetadata";
-import { Constructor } from "../types";
+import { Newable } from "../types";
 import InversifySugar from "./InversifySugar";
 import messagesMap from "./messagesMap";
 import ExportedProviderRef from "../types/ExportedProviderRef";
@@ -11,7 +11,7 @@ import { MODULE_IS_BINDED_KEY, MODULE_METADATA_KEYS } from "./constants";
 import { bindProviderToContainer, bindProviderToModule } from "./bindProvider";
 
 export default function importModule(
-  Module: Constructor,
+  Module: Newable,
   isRoot = false
 ): ExportedProviderRef[] {
   const metadata = getAllMetadata<ModuleMetadata>(
@@ -40,7 +40,7 @@ export default function importModule(
  * @param Module
  * @returns
  */
-function importRootModule(Module: Constructor) {
+function importRootModule(Module: Newable) {
   const metadata = getAllMetadata<ModuleMetadata>(
     Module.prototype,
     MODULE_METADATA_KEYS
@@ -61,7 +61,7 @@ function importRootModule(Module: Constructor) {
  * @description This function is used to import a child module.
  * @param Module
  */
-function importChildModule(Module: Constructor) {
+function importChildModule(Module: Newable) {
   const metadata = getAllMetadata<ModuleMetadata>(
     Module.prototype,
     MODULE_METADATA_KEYS
