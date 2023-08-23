@@ -24,6 +24,8 @@ export default class InversifySugar {
     return InversifySugar.state.globalContainer;
   }
 
+  public static readonly options = inversifySugarOptions;
+
   /**
    * @description This method is used to bootstrap inversify and import the AppModule.
    */
@@ -52,29 +54,37 @@ export default class InversifySugar {
       rootModule: undefined,
     });
 
-    Object.assign(inversifySugarOptions, defaultInverseSugarOptions);
+    Object.assign(InversifySugar.options, defaultInverseSugarOptions);
   }
 
-  static onModuleImported(
+  static onRootModuleBinded(container: Container, Module: Newable) {
+    if (inversifySugarOptions.debug) {
+      console.log(
+        messagesMap.rootModuleProvidersBinded(Module.name, container.id)
+      );
+    }
+  }
+
+  static onModuleBinded(
     container: Container,
     metadata: ModuleMetadata,
     Module: Newable
   ) {
-    inversifySugarOptions.onModuleImported?.(container, metadata, Module);
+    inversifySugarOptions.onModuleBinded?.(container, metadata, Module);
 
     if (inversifySugarOptions.debug) {
-      console.log(messagesMap.moduleProvidersBinded(Module.name));
+      console.log(messagesMap.moduleProvidersBinded(Module.name, container.id));
     }
   }
 
-  static setOnModuleImported(
+  static setOnModuleBinded(
     value: (
       container: Container,
       metadata: ModuleMetadata,
       Module: Newable
     ) => void
   ) {
-    inversifySugarOptions.onModuleImported = value;
+    inversifySugarOptions.onModuleBinded = value;
   }
 }
 

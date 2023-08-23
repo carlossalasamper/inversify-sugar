@@ -7,6 +7,5 @@ export default function bindExportedProviderRef(
 ) {
   container
     .bind(exportedProviderRef.provide)
-    .toDynamicValue(exportedProviderRef.getValue)
-    .whenTargetIsDefault();
+    .toDynamicValue(exportedProviderRef.getValue);
 }

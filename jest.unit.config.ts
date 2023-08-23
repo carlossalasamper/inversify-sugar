@@ -1,10 +1,10 @@
 import type { JestConfigWithTsJest } from "ts-jest";
 
-const jestConfig: JestConfigWithTsJest = {
+const jestUnitConfig: JestConfigWithTsJest = {
   preset: "ts-jest",
   testEnvironment: "node",
   testMatch: ["**/tests/unit/**/*.spec.ts"],
-  setupFiles: ["./tests/unit/jest.setup.ts"],
+  setupFiles: ["./tests/jest.setup.ts"],
   collectCoverage: true,
   coverageDirectory: "./coverage",
   collectCoverageFrom: [
@@ -25,4 +25,4 @@ const jestConfig: JestConfigWithTsJest = {
   },
 };
 
-export default jestConfig;
+export default jestUnitConfig;

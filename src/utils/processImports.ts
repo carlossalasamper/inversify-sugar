@@ -2,7 +2,9 @@ import ExportedProviderRef from "../types/ExportedProviderRef";
 import { Newable } from "../types";
 import importModule from "./importModule";
 import bindExportedProviderRef from "./bindExportedProviderRef";
-import { Container } from "inversify";
+import getAllMetadata from "./getAllMetadata";
+import ModuleMetadata from "../types/ModuleMetadata";
+import { MODULE_METADATA_KEYS } from "./constants";
 
 /**
  * @description This function is used to process imports.
@@ -10,9 +12,13 @@ import { Container } from "inversify";
  * Then you can inject them as an array.
  */
 export default function processImports(
-  container: Container,
+  Module: Newable,
   imports: Newable[]
 ): ExportedProviderRef[] {
+  const { sharedContainer } = getAllMetadata<ModuleMetadata>(
+    Module.prototype,
+    MODULE_METADATA_KEYS
+  );
   const allRefs: ExportedProviderRef[] = [];
   const reducedRefs: ExportedProviderRef[] = [];
   const groups: Record<
@@ -59,7 +65,7 @@ export default function processImports(
 
     reducedRefs.push(reducedRef);
 
-    bindExportedProviderRef(reducedRef, container);
+    bindExportedProviderRef(reducedRef, sharedContainer);
   }
 
   return reducedRefs;

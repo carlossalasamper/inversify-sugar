@@ -11,7 +11,8 @@ export default function unbindModule(Module: Newable) {
   );
 
   if (metadata.isBinded) {
-    metadata.container.unbindAll();
+    metadata.privateContainer.unbindAll();
+    metadata.sharedContainer.unbindAll();
     metadata.isBinded = false;
   }
 

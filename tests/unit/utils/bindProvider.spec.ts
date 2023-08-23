@@ -6,10 +6,8 @@ import {
   ValueProvider,
 } from "../../../src/types/Provider";
 import { getModuleContainer, module } from "../../../src";
-import {
-  bindProviderToContainer,
-  bindProviderToModule,
-} from "../../../src/utils/bindProvider";
+import { bindProviderToContainer } from "../../../src/utils/bindProviderToContainer";
+import { bindProviderToModule } from "../../../src/utils/bindProviderToModule";
 
 const TestClassToken = Symbol();
 

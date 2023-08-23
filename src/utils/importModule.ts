@@ -8,7 +8,8 @@ import ExportedProviderRef from "../types/ExportedProviderRef";
 import createExportedProviderRef from "./createExportedProviderRef";
 import processImports from "./processImports";
 import { MODULE_IS_BINDED_KEY, MODULE_METADATA_KEYS } from "./constants";
-import { bindProviderToContainer, bindProviderToModule } from "./bindProvider";
+import { bindProviderToContainer } from "./bindProviderToContainer";
+import { bindProviderToModule } from "./bindProviderToModule";
 
 export default function importModule(
   Module: Newable,
@@ -26,8 +27,6 @@ export default function importModule(
     } else {
       exportedProviders.push(...importChildModule(Module));
     }
-
-    Reflect.defineMetadata(MODULE_IS_BINDED_KEY, true, Module.prototype);
   } else {
     console.warn(messagesMap.notAModuleImported(Module.name));
   }
@@ -52,8 +51,11 @@ function importRootModule(Module: Newable) {
     )) {
       bindProviderToContainer(provider, InversifySugar.globalContainer);
     }
+    InversifySugar.onRootModuleBinded(metadata.sharedContainer, Module);
 
-    processImports(metadata.container, metadata.imports);
+    processImports(Module, metadata.imports);
+
+    Reflect.defineMetadata(MODULE_IS_BINDED_KEY, true, Module.prototype);
   }
 }
 
@@ -69,7 +71,7 @@ function importChildModule(Module: Newable) {
   const exportedProviderRefs: ExportedProviderRef[] = [];
 
   if (!metadata.isBinded) {
-    processImports(metadata.container, metadata.imports);
+    processImports(Module, metadata.imports);
 
     for (const provider of metadata.providers) {
       bindProviderToModule(provider, Module);
@@ -79,7 +81,9 @@ function importChildModule(Module: Newable) {
       bindProviderToContainer(provider, InversifySugar.globalContainer);
     }
 
-    InversifySugar.onModuleImported(metadata.container, metadata, Module);
+    InversifySugar.onModuleBinded(metadata.sharedContainer, metadata, Module);
+
+    Reflect.defineMetadata(MODULE_IS_BINDED_KEY, true, Module.prototype);
   }
 
   for (const exportedProvider of metadata.exports) {

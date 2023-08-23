@@ -14,7 +14,9 @@ describe("@module", () => {
       MODULE_METADATA_KEYS
     );
 
-    expect(metadata).toMatchObject<Omit<ModuleMetadata, "id" | "container">>({
+    expect(metadata).toMatchObject<
+      Omit<ModuleMetadata, "id" | "privateContainer" | "sharedContainer">
+    >({
       isModule: true,
       isBinded: false,
       imports: [],
@@ -23,7 +25,7 @@ describe("@module", () => {
       exports: [],
     });
 
-    expect(metadata.container).toBeInstanceOf(Container);
+    expect(metadata.privateContainer).toBeInstanceOf(Container);
   });
 
   it("Should separate scoped and global providers.", () => {

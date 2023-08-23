@@ -1,4 +1,3 @@
-import { inject, injectable } from "inversify";
 import {
   Newable,
   InversifySugar,
@@ -22,15 +21,15 @@ class AppModule {}
 
 describe("InversifySugar", () => {
   const consoleLogMock = jest.spyOn(console, "log").mockImplementation();
-  const inversifySugarOnModuleImported = jest.spyOn(
+  const inversifySugarOnModuleBinded = jest.spyOn(
     InversifySugar,
-    "onModuleImported"
+    "onModuleBinded"
   );
-  const onModuleImported = jest.fn();
+  const onModuleBinded = jest.fn();
 
   beforeEach(() => {
     InversifySugar.reset();
-    InversifySugar.setOnModuleImported(onModuleImported);
+    InversifySugar.setOnModuleBinded(onModuleBinded);
     inversifySugarOptions.debug = true;
   });
 
@@ -41,17 +40,20 @@ describe("InversifySugar", () => {
     );
   });
 
-  it("InversifySugar.onModuleImported should be called once per imported module.", () => {
-    expect(inversifySugarOnModuleImported).toHaveBeenCalledTimes(
+  it("InversifySugar.onModuleBinded should be called once per binded module.", () => {
+    expect(inversifySugarOnModuleBinded).toHaveBeenCalledTimes(
       appModuleImports.length
     );
-    expect(onModuleImported).toHaveBeenCalledTimes(appModuleImports.length);
+    expect(onModuleBinded).toHaveBeenCalledTimes(appModuleImports.length);
   });
 
   it("Should print a message for each imported module.", () => {
     for (const importedModule of appModuleImports) {
       expect(consoleLogMock).toHaveBeenCalledWith(
-        messagesMap.moduleProvidersBinded(importedModule.name)
+        messagesMap.moduleProvidersBinded(
+          importedModule.name,
+          getModuleContainer(importedModule).id
+        )
       );
     }
   });
@@ -59,50 +61,5 @@ describe("InversifySugar", () => {
   it("Should reset InversifySugar even if its nto running", () => {
     InversifySugar.reset();
     expect(() => InversifySugar.run(AppModule)).not.toThrow();
-  });
-
-  it("Should resolve all dependencies in a complicated escenary", () => {
-    const IUserRepositoryToken = Symbol("IUserRepository");
-    @injectable()
-    class UserRepository {}
-
-    @injectable()
-    class AuthUseCase {
-      constructor(
-        @inject(IUserRepositoryToken)
-        public readonly userRepository: UserRepository
-      ) {}
-    }
-    @injectable()
-    class AuthService {
-      constructor(
-        @inject(AuthUseCase)
-        public readonly useCase: AuthUseCase
-      ) {}
-    }
-
-    @module({
-      providers: [{ useClass: UserRepository, provide: IUserRepositoryToken }],
-      exports: [IUserRepositoryToken],
-    })
-    class UserModule {}
-
-    @module({
-      imports: [UserModule],
-      providers: [AuthService, AuthUseCase],
-      exports: [AuthService],
-    })
-    class AuthModule {}
-
-    @module({
-      imports: [AuthModule, UserModule],
-    })
-    class AppModule {}
-
-    InversifySugar.run(AppModule);
-
-    const container = getModuleContainer(AppModule);
-
-    expect(container.get(AuthService)).toBeInstanceOf(AuthService);
   });
 });

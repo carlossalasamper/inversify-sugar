@@ -32,8 +32,9 @@
   ],
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "test:unit": "jest --coverage && jest-coverage-badges --input ./coverage/coverage-summary.json --output ./assets/badges/coverage",
-    "test": "yarn test:unit",
+    "test:unit": "jest --config ./jest.unit.config.ts --coverage && jest-coverage-badges --input ./coverage/coverage-summary.json --output ./assets/badges/coverage",
+    "test:integration": "jest --config ./jest.integration.config.ts",
+    "test": "yarn test:unit && yarn test:integration",
     "build": "ttsc --project tsconfig.build.json",
     "build:dev": "yarn build --project tsconfig.build.json --watch",
     "yalc:publish": "yarn test && yarn build && npx yalc publish",

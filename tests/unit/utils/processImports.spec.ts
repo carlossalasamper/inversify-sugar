@@ -1,4 +1,4 @@
-import { Container, injectable } from "inversify";
+import { injectable } from "inversify";
 import processImports from "../../../src/utils/processImports";
 import { module } from "../../../src";
 import ExportedProviderRef from "../../../src/types/ExportedProviderRef";
@@ -41,8 +41,11 @@ describe("processImports", () => {
     })
     class BModule {}
 
-    const container = new Container();
-    const imports = [AModule, BModule];
+    @module({
+      imports: [AModule, BModule],
+    })
+    class RootModule {}
+
     const reducedRefs: ExportedProviderRef[] = [
       {
         provide: TestServiceToken,
@@ -50,7 +53,8 @@ describe("processImports", () => {
         getValue: jest.fn(),
       },
     ];
-    const result = processImports(container, imports);
+
+    const result = processImports(RootModule, [AModule, BModule]);
 
     expect(result).toHaveLength(1);
     expect(result[0].provide).toEqual(reducedRefs[0].provide);
@@ -73,7 +77,9 @@ describe("processImports", () => {
     })
     class BModule {}
 
-    const container = new Container();
+    @module({})
+    class RootModule {}
+
     const imports = [AModule, BModule];
     const reducedRefs: ExportedProviderRef[] = [
       {
@@ -82,7 +88,7 @@ describe("processImports", () => {
         getValue: jest.fn(),
       },
     ];
-    const result = processImports(container, imports);
+    const result = processImports(RootModule, imports);
 
     expect(result).toHaveLength(1);
     expect(result[0].provide).toEqual(reducedRefs[0].provide);
@@ -117,7 +123,9 @@ describe("processImports", () => {
     })
     class BModule {}
 
-    const container = new Container();
+    @module({})
+    class RootModule {}
+
     const imports = [AModule, BModule];
     const reducedRefs: ExportedProviderRef[] = [
       {
@@ -126,7 +134,7 @@ describe("processImports", () => {
         getValue: jest.fn(),
       },
     ];
-    const result = processImports(container, imports);
+    const result = processImports(RootModule, imports);
 
     expect(result).toHaveLength(1);
     expect(result[0].provide).toEqual(reducedRefs[0].provide);
@@ -199,7 +207,9 @@ describe("processImports", () => {
     })
     class CModule {}
 
-    const container = new Container();
+    @module({})
+    class RootModule {}
+
     const imports = [AModule, BModule, CModule];
     const reducedRefs: ExportedProviderRef[] = [
       {
@@ -208,7 +218,7 @@ describe("processImports", () => {
         getValue: jest.fn(),
       },
     ];
-    const result = processImports(container, imports);
+    const result = processImports(RootModule, imports);
 
     expect(result).toHaveLength(1);
     expect(result[0].provide).toEqual(reducedRefs[0].provide);

@@ -21,15 +21,19 @@ export default function module({
       id: new Date().getTime(),
       isModule: true,
       isBinded: false,
-      container: new Container(),
+      privateContainer: new Container(),
+      sharedContainer: new Container(),
       imports,
       providers: scopedProviders,
       globalProviders,
       exports,
     };
 
-    metadata.container.parent = InversifySugar.globalContainer;
-    metadata.container.applyMiddleware(loggerMiddleware);
+    metadata.privateContainer.parent = InversifySugar.globalContainer;
+    metadata.sharedContainer.parent = metadata.privateContainer;
+
+    metadata.privateContainer.applyMiddleware(loggerMiddleware);
+    metadata.sharedContainer.applyMiddleware(loggerMiddleware);
 
     for (const key in metadata) {
       if (metadata.hasOwnProperty(key)) {

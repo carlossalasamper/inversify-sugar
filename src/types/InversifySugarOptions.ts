@@ -14,13 +14,13 @@ export default interface InversifySugarOptions {
   debug: boolean;
 
   /**
-   * @description Callback that is called when a module is imported.
+   * @description Callback that is called when a module is binded.
    * @param container The container that is used to import the module.
    * @param metadata The metadata of the module.
-   * @param Module The module that is imported.
+   * @param Module The module that is binded.
    * @returns void
    * */
-  onModuleImported:
+  onModuleBinded:
     | ((
         container: Container,
         metadata: ModuleMetadata,
