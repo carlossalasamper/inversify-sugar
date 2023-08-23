@@ -1,7 +1,7 @@
 import { Container, injectable } from "inversify";
 import {
   ClassProvider,
-  ConstructorProvider,
+  NewableProvider,
   FactoryProvider,
   ValueProvider,
 } from "../../../src/types/Provider";
@@ -24,8 +24,8 @@ describe("bindProvider", () => {
     getModuleContainer(TestModule).unbindAll();
   });
 
-  it("Should bind a ConstructorProvider", () => {
-    const provider: ConstructorProvider = TestClass;
+  it("Should bind a NewableProvider", () => {
+    const provider: NewableProvider = TestClass;
 
     @module({})
     class TestModule {}
@@ -86,8 +86,8 @@ describe("bindProvider", () => {
     expect(container.isBound(TestClassToken)).toBe(true);
   });
 
-  it("Should bind a ConstructorProvider to a container", () => {
-    const provider: ConstructorProvider = TestClass;
+  it("Should bind a NewableProvider to a container", () => {
+    const provider: NewableProvider = TestClass;
     const container = new Container();
 
     bindProviderToContainer(provider, container);

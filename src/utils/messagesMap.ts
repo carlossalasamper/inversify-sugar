@@ -13,13 +13,15 @@ const messagesMap = {
       : serviceIdentifier.toString();
 
     return `${clc.bold("[provider]")} ${clc.green(
-      `Trying to resolve ${clc.bold(
-        serviceIdentifierName
-      )} in container ${clc.bold(containerId)}.`
+      `Resolving ${clc.bold(serviceIdentifierName)} in container ${clc.bold(
+        containerId
+      )}.`
     )}`;
   },
-  moduleImported: (moduleName: string) =>
-    `${clc.bold("[@module]")} ${clc.green(`${moduleName} imported.`)}`,
+  moduleProvidersBinded: (moduleName: string) =>
+    `${clc.bold("[@module]")} ${clc.green(
+      `${clc.bold(moduleName)} providers binded.`
+    )}`,
   notAModuleImported: (importedItemName: string) =>
     `importModule() was called with a class that is not a module: ${importedItemName}. Skipping...`,
   notAModuleUnbinded: (unbindedItemName: string) =>

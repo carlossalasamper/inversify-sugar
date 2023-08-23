@@ -17,9 +17,9 @@ interface WithIsGlobal {
 }
 
 /**
- * Shorthand to define a *Class* provider to self in singleton scope.
+ * @description Shorthand to define a *Class* provider to self in singleton scope.
  */
-export type ConstructorProvider<T = any> = Newable<T>;
+export type NewableProvider<T = any> = Newable<T>;
 
 /**
  * @description Interface defining a *Class* type provider.
@@ -63,7 +63,7 @@ export interface FactoryProvider<T = any> extends WithProvide, WithIsGlobal {
 }
 
 type Provider<T = any> =
-  | ConstructorProvider<T>
+  | NewableProvider<T>
   | ClassProvider<T>
   | ValueProvider<T>
   | FactoryProvider<T>;

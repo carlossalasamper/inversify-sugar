@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Provider, {
   ClassProvider,
-  ConstructorProvider,
+  NewableProvider,
   FactoryProvider,
   ValueProvider,
 } from "../types/Provider";
-import isConstructorProvider from "./validation/isConstructorProvider";
+import isNewableProvider from "./validation/isNewableProvider";
 import isClassProvider from "./validation/isClassProvider";
 import isValueProvider from "./validation/isValueProvider";
 import isFactoryProvider from "./validation/isFactoryProvider";
@@ -23,13 +23,11 @@ export const bindProviderToModule = (provider: Provider, Module: Newable) => {
   );
   const { container, id } = metatadata;
 
-  if (isConstructorProvider(provider)) {
-    const constructorProvider = provider as ConstructorProvider;
+  if (isNewableProvider(provider)) {
+    const newableProvider = provider as NewableProvider;
 
-    setScope(
-      container.bind(constructorProvider).toSelf()
-    ).whenTargetIsDefault();
-    setScope(container.bind(constructorProvider).toSelf()).whenTargetNamed(id);
+    setScope(container.bind(newableProvider).toSelf()).whenTargetIsDefault();
+    setScope(container.bind(newableProvider).toSelf()).whenTargetNamed(id);
   } else if (isClassProvider(provider)) {
     const classProvider = provider as ClassProvider;
 
@@ -59,10 +57,10 @@ export const bindProviderToContainer = (
   provider: Provider,
   container: Container
 ) => {
-  if (isConstructorProvider(provider)) {
-    const constructorProvider = provider as ConstructorProvider;
+  if (isNewableProvider(provider)) {
+    const newableProvider = provider as NewableProvider;
 
-    container.bind(constructorProvider).toSelf().inSingletonScope();
+    container.bind(newableProvider).toSelf().inSingletonScope();
   } else if (isClassProvider(provider)) {
     const classProvider = provider as ClassProvider;
     setScope(

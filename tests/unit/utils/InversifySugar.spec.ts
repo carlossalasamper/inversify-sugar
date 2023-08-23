@@ -51,7 +51,7 @@ describe("InversifySugar", () => {
   it("Should print a message for each imported module.", () => {
     for (const importedModule of appModuleImports) {
       expect(consoleLogMock).toHaveBeenCalledWith(
-        messagesMap.moduleImported(importedModule.name)
+        messagesMap.moduleProvidersBinded(importedModule.name)
       );
     }
   });

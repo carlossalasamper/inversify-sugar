@@ -63,7 +63,7 @@ export default class InversifySugar {
     inversifySugarOptions.onModuleImported?.(container, metadata, Module);
 
     if (inversifySugarOptions.debug) {
-      console.log(messagesMap.moduleImported(Module.name));
+      console.log(messagesMap.moduleProvidersBinded(Module.name));
     }
   }
 
