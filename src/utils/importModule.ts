@@ -51,7 +51,7 @@ function importRootModule(Module: Newable) {
     )) {
       bindProviderToContainer(provider, InversifySugar.globalContainer);
     }
-    InversifySugar.onRootModuleBinded(metadata.container, Module);
+    InversifySugar.onModuleBinded(metadata.container, metadata, Module);
 
     processImports(Module, metadata.imports);
 

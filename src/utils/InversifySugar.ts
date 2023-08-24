@@ -57,14 +57,6 @@ export default class InversifySugar {
     Object.assign(InversifySugar.options, defaultInverseSugarOptions);
   }
 
-  static onRootModuleBinded(container: Container, Module: Newable) {
-    if (inversifySugarOptions.debug) {
-      console.log(
-        messagesMap.rootModuleProvidersBinded(Module.name, container.id)
-      );
-    }
-  }
-
   static onModuleBinded(
     container: Container,
     metadata: ModuleMetadata,
@@ -73,7 +65,7 @@ export default class InversifySugar {
     inversifySugarOptions.onModuleBinded?.(container, metadata, Module);
 
     if (inversifySugarOptions.debug) {
-      console.log(messagesMap.moduleProvidersBinded(Module.name, container.id));
+      console.log(messagesMap.moduleProvidersBinded(Module.name));
     }
   }
 

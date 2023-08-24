@@ -1,9 +1,4 @@
-import {
-  Newable,
-  InversifySugar,
-  getModuleContainer,
-  module,
-} from "../../../src";
+import { Newable, InversifySugar, module } from "../../../src";
 import messagesMap from "../../../src/utils/messagesMap";
 import inversifySugarOptions from "../../../src/utils/inversifySugarOptions";
 
@@ -18,6 +13,8 @@ const appModuleImports: Newable[] = [ModuleA, ModuleB];
   imports: appModuleImports,
 })
 class AppModule {}
+
+const importedModules = appModuleImports.concat(AppModule);
 
 describe("InversifySugar", () => {
   const consoleLogMock = jest.spyOn(console, "log").mockImplementation();
@@ -42,18 +39,15 @@ describe("InversifySugar", () => {
 
   it("InversifySugar.onModuleBinded should be called once per binded module.", () => {
     expect(inversifySugarOnModuleBinded).toHaveBeenCalledTimes(
-      appModuleImports.length
+      importedModules.length
     );
-    expect(onModuleBinded).toHaveBeenCalledTimes(appModuleImports.length);
+    expect(onModuleBinded).toHaveBeenCalledTimes(importedModules.length);
   });
 
   it("Should print a message for each imported module.", () => {
-    for (const importedModule of appModuleImports) {
+    for (const importedModule of importedModules) {
       expect(consoleLogMock).toHaveBeenCalledWith(
-        messagesMap.moduleProvidersBinded(
-          importedModule.name,
-          getModuleContainer(importedModule).id
-        )
+        messagesMap.moduleProvidersBinded(importedModule.name)
       );
     }
   });

@@ -17,13 +17,9 @@ const messagesMap = {
       )}.`
     )}`;
   },
-  rootModuleProvidersBinded: (moduleName: string, containerId: number) =>
-    `${clc.bold("[@rootModule]")} ${clc.green(
-      `${clc.bold(moduleName)} providers binded. Container: ${containerId}`
-    )}`,
-  moduleProvidersBinded: (moduleName: string, containerId: number) =>
+  moduleProvidersBinded: (moduleName: string) =>
     `${clc.bold("[@module]")} ${clc.green(
-      `${clc.bold(moduleName)} providers binded. Container: ${containerId}`
+      `${clc.bold(moduleName)} providers binded.`
     )}`,
   notAModuleImported: (importedItemName: string) =>
     `importModule() was called with a class that is not a module: ${importedItemName}. Skipping...`,
