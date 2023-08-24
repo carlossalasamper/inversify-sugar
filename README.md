@@ -23,7 +23,9 @@
     - [Providers](#providers)
     - [Exports](#exports)
     - [Get the Container of a Module](#get-the-container-of-a-module)
+- [Testing](#testing)
 - [Support the Project](#support-the-project)
+- [License](#license)
 
 ## Introduction
 
@@ -86,7 +88,7 @@ Why can't we Inversify users organize our dependencies in such an elegant way?
 
 This is how we have to write the same code in Inversify, with these 3 disadvantages:
 
-- Your have to manage all the instantiated containers separately to scope the dependencies into modules.
+- Your have to manage all the instantiated containers separately to scope the dependencies into modules (to build a hierarchical dependency system).
 - Containers are initialized at the time the files that declare them are first imported.
 - There is no single entry point to initialize all the containers.
 
@@ -206,29 +208,105 @@ You can now start injecting your dependencies where you need them.
 
 Let's not forget that Inversify Sugar works on top of Inversify, so to understand what's going on behind the scenes, we'll be referencing [the original Inversify documentation](https://inversify.io/) throughout this guide.
 
-We also recommend having the original documentation on hand in order to report malfunctions in this library or the lack of any of the Inversify features.
-
 Below you will find a detailed explanation of each of the concepts that this library handles together with different use examples and its public API.
 
 ### Modules
 
-// TODO
+A module is a class annotated with a `@module()` decorator. The `@module()` decorator provides metadata that is used to organize the dependency system.
+
+Each application has at least one module, a root module. The root module is normally called `AppModule` and is the starting point used to build the dependencies tree. While very small applications may theoretically have just the root module, for most applications, the resulting architecture will employ multiple modules, each encapsulating a closely related set of capabilities.
+
+```typescript
+import { module } from "inversify-sugar";
+import CatsModule from "./cats/CatsModule";
+import DogsModule from "./dogs/DogsModule";
+import BirdsModule from "./birds/BirdsModule";
+
+@module({
+  imports: [CatsModule, DogsModule, BirdsModule],
+  providers: [],
+  exports: [],
+})
+export class AppModule {}
+```
+
+The relationship between modules would be as follows:
+
+<div align="center">
+<img src="./assets/images/inversify-sugar-modules.png" style="max-width: 900px; width: 100%;">
+</div>
+
+</br>
+
+Once `AppModule` is defined, we will only have to call the `InversifySugar.run` method specifying the root module:
+
+```typescript
+import { InversifySugar } from "inversify-sugar";
+import { AppModule } from "./AppModule";
+
+InversifySugar.run(AppModule);
+```
+
+The module decorator accepts an object argument with the `imports`, `providers` and `exports` properties.
+
+Next we will explain what each of these properties is for.
 
 #### Imports
 
-// TODO
+The list of imported modules that export the providers which are required in this module.
 
 #### Providers
 
-// TODO
+The providers that will be instantiated when the module is registered. These providers may be shared at least across this module.
+
+You can define a provider in different ways depending on the desired instantiation behavior.
 
 #### Exports
 
-// TODO
+The subset of providers that are provided by this module and should be available in other modules which import this module. You can use either a ExportedProvider object or just its token (provide value).
+
+If you export a provider with an injection token that is not found in the module's dependency container, an error will be thrown.
 
 #### Get the Container of a Module
 
-// TODO
+Ideally we shouldn't be accessing module containers directly to get a service. In either case, the `getModuleContainer` function allows you to get the container of a module in case you need to access it in an statement.
+
+```typescript
+import { getModuleContainer, module, InversifySugar } from "inversify-sugar";
+import { injectable } from "inversify";
+
+@injectable()
+class TestService {}
+
+@module({
+  providers: [TestService],
+})
+class TestModule {}
+
+@module({
+  imports: [TestModule],
+})
+class AppModule {}
+
+InversifySugar.run(AppModule);
+
+// Accessing the container of a imported module
+const testModuleContainer = getModuleContainer(TestModule);
+const testService = testModuleContainer.get(TestService);
+```
+
+## Testing
+
+The complexity of the memory state during the execution of Inversify Sugar, managing multiple Inversify containers under the hood, is too high to ensure that it is working correctly without writing unit tests of each of the functionalities separately.
+
+For this reason, a set of tests have been written that you can consult [here](./tests).
+
+So you can use it without worries. You are facing a completely armored dependency system.
+
+<img src="./assets/badges/coverage/badge-functions.svg" />
+<img src="./assets/badges/coverage/badge-lines.svg" />
+<img src="./assets/badges/coverage/badge-statements.svg" />
+<img src="./assets/badges/coverage/badge-branches.svg" />
 
 ## Support the Project
 
@@ -245,3 +323,9 @@ Below you will find a detailed explanation of each of the concepts that this lib
 <p align="center">
   <a href="https://godofprogramming.com" target="_blank">godofprogramming.com</a>
 </p>
+
+## License
+
+The Inversify Sugar source code is made available under the [MIT license](./LICENSE).
+
+Some of the dependencies are licensed differently, with the BSD license, for example.

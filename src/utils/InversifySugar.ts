@@ -1,78 +1,83 @@
-import { Container, interfaces } from "inversify";
-import { Constructor } from "../types";
+import { Newable } from "../types";
 import importModule from "./importModule";
 import ModuleMetadata from "../types/ModuleMetadata";
-import clc from "cli-color";
+import messagesMap from "./messagesMap";
+import InversifySugarState from "../types/InversifySugarState";
+import unbindModule from "./unbindModule";
+import { Container } from "inversify";
+import inversifySugarOptions, {
+  defaultInverseSugarOptions,
+} from "./inversifySugarOptions";
+import { loggerMiddleware } from "../middlewares";
 
 /**
  * @description InversifySugar is a utility class that helps you to bootstrap inversify and configure it.
  */
 export default class InversifySugar {
-  /**
-   * @description The default scope for bindings (providers prop of @module decorator).
-   */
-  public static defaultScope: interfaces.BindingScope = "Transient";
+  private static readonly state: InversifySugarState = {
+    isRunning: false,
+    globalContainer: new Container(),
+    rootModule: undefined,
+  };
 
-  /**
-   * @description Flag that enables debug mode.
-   */
-  public static debug = false;
+  public static get globalContainer() {
+    return InversifySugar.state.globalContainer;
+  }
 
-  public static _rootContainer: Container | undefined;
-
-  private static _onModuleImported:
-    | ((
-        container: Container,
-        metadata: ModuleMetadata,
-        Module: Constructor
-      ) => void)
-    | undefined;
+  public static readonly options = inversifySugarOptions;
 
   /**
    * @description This method is used to bootstrap inversify and import the AppModule.
    */
-  static run(AppModule: Constructor): Container {
-    return importModule(AppModule, true);
+  public static run(AppModule: Newable) {
+    if (InversifySugar.state.isRunning) {
+      throw new Error(messagesMap.alreadyRunning);
+    }
+
+    InversifySugar.state.isRunning = true;
+    InversifySugar.state.rootModule = AppModule;
+
+    importModule(AppModule, true);
   }
 
-  static get onModuleImported() {
-    return (
-      container: Container,
-      metadata: ModuleMetadata,
-      Module: Constructor
-    ) => {
-      InversifySugar._onModuleImported?.(container, metadata, Module);
+  /**
+   * @description This method is used to reset the options and state of the dependency system.
+   * It is useful for testing purposes.
+   */
+  static reset() {
+    InversifySugar.state.rootModule &&
+      unbindModule(InversifySugar.state.rootModule);
 
-      if (InversifySugar.debug) {
-        console.log(
-          clc.bold("[@module]"),
-          clc.green(`${Module.name} imported.`)
-        );
-      }
-    };
+    InversifySugar.globalContainer.unbindAll();
+    Object.assign(InversifySugar.state, {
+      isRunning: false,
+      rootModule: undefined,
+    });
+
+    Object.assign(InversifySugar.options, defaultInverseSugarOptions);
   }
 
-  static set onModuleImported(
+  static onModuleBinded(
+    container: Container,
+    metadata: ModuleMetadata,
+    Module: Newable
+  ) {
+    inversifySugarOptions.onModuleBinded?.(container, metadata, Module);
+
+    if (inversifySugarOptions.debug) {
+      console.log(messagesMap.moduleProvidersBinded(Module.name));
+    }
+  }
+
+  static setOnModuleBinded(
     value: (
       container: Container,
       metadata: ModuleMetadata,
-      Module: Constructor
+      Module: Newable
     ) => void
   ) {
-    InversifySugar._onModuleImported = value;
-  }
-
-  static get rootContainer() {
-    if (!InversifySugar._rootContainer) {
-      console.warn(
-        clc.xterm(250)("You are accessing the root container before it is set.")
-      );
-    }
-
-    return InversifySugar._rootContainer;
-  }
-
-  static setRootContainer(container: Container | undefined) {
-    InversifySugar._rootContainer = container;
+    inversifySugarOptions.onModuleBinded = value;
   }
 }
+
+InversifySugar.globalContainer.applyMiddleware(loggerMiddleware);

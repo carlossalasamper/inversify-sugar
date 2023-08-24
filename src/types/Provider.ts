@@ -1,52 +1,39 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { interfaces } from "inversify";
-import { z } from "zod";
-import { Constructor } from ".";
-
-const ProvideSchema = z.string().or(z.symbol());
-const ScopeSchema = z.enum(["Singleton", "Request", "Transient"]);
-
-const ConstructorProviderSchema = z.function();
-
-const ClassProviderSchema = z.object({
-  provide: ProvideSchema.optional(),
-  useClass: z.function(),
-  scope: ScopeSchema.optional(),
-});
-
-const ValueProviderSchema = z.object({
-  provide: ProvideSchema,
-  useValue: z.any(),
-});
-
-const FactoryProviderSchema = z.object({
-  provide: ProvideSchema,
-  useFactory: z.function(),
-});
+import { Newable } from ".";
 
 interface WithProvide {
   /**
    * @description ServiceIdentifier / InjectionToken
    */
-  provide: interfaces.ServiceIdentifier;
+  provide: string | symbol;
+}
+
+interface WithIsGlobal {
+  /**
+   * @description Flag that indicates if the provider is binded to the global container.
+   */
+  isGlobal?: boolean;
 }
 
 /**
- * Shorthand to define a *Class* provider to self in singleton scope.
+ * @description Shorthand to define a *Class* provider to self in singleton scope.
  */
-export type ConstructorProvider<T = any> = Constructor<T>;
+export type NewableProvider<T = any> = Newable<T>;
 
 /**
  * @description Interface defining a *Class* type provider.
  */
-export interface ClassProvider<T = any> extends Partial<WithProvide> {
+export interface ClassProvider<T = any>
+  extends Partial<WithProvide>,
+    WithIsGlobal {
   /**
    * @description Instance of a provider to be injected.
    */
   useClass: T;
   useValue?: never;
   /**
-   * Binding scope of a provider.
+   * @description Binding scope of a provider.
    * @default 'Singleton'
    */
   scope?: interfaces.BindingScope;
@@ -55,7 +42,7 @@ export interface ClassProvider<T = any> extends Partial<WithProvide> {
 /**
  * @description Interface defining a *Value* type provider.
  */
-export interface ValueProvider<T = any> extends WithProvide {
+export interface ValueProvider<T = any> extends WithProvide, WithIsGlobal {
   /**
    * @description Instance of a provider to be injected.
    */
@@ -66,7 +53,7 @@ export interface ValueProvider<T = any> extends WithProvide {
 /**
  * @description Interface defining a *Factory* type provider. The scope of a factory provider is always singleton.
  */
-export interface FactoryProvider<T = any> extends WithProvide {
+export interface FactoryProvider<T = any> extends WithProvide, WithIsGlobal {
   /**
    * @description Factory function to be injected.
    */
@@ -76,22 +63,9 @@ export interface FactoryProvider<T = any> extends WithProvide {
 }
 
 type Provider<T = any> =
-  | ConstructorProvider<T>
+  | NewableProvider<T>
   | ClassProvider<T>
   | ValueProvider<T>
   | FactoryProvider<T>;
 
 export default Provider;
-
-export const isConstructorProvider = (data: unknown) => {
-  return ConstructorProviderSchema.safeParse(data).success;
-};
-export const isClassProvider = (data: unknown) => {
-  return ClassProviderSchema.safeParse(data).success;
-};
-export const isValueProvider = (data: unknown) => {
-  return ValueProviderSchema.safeParse(data).success;
-};
-export const isFactoryProvider = (data: unknown) => {
-  return FactoryProviderSchema.safeParse(data).success;
-};

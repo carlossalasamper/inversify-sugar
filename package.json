@@ -1,6 +1,6 @@
 {
   "name": "inversify-sugar",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "🧁 Sweeten up the InversifyJS syntax with this set of decorators, functions, and types built on top of the dependency container.",
   "author": {
     "name": "Carlos Sala Samper",
@@ -31,23 +31,26 @@
     "container"
   ],
   "scripts": {
+    "prepare": "husky install",
     "lint": "eslint . --ext .ts",
-    "test": "",
-    "build": "tspc",
-    "build:dev": "yarn build --watch",
-    "yalc:publish": "npx yalc publish",
-    "yalc:update": "npx yalc push --scripts --update --replace",
-    "npm:publish": "yarn build && npm publish"
+    "test:unit": "jest --config ./jest.unit.config.ts --coverage && jest-coverage-badges --input ./coverage/coverage-summary.json --output ./assets/badges/coverage",
+    "test:integration": "jest --config ./jest.integration.config.ts",
+    "test": "yarn test:unit && yarn test:integration",
+    "build": "ttsc --project tsconfig.build.json",
+    "build:dev": "yarn build --project tsconfig.build.json --watch",
+    "yalc:publish": "yarn test && yarn build && npx yalc publish",
+    "yalc:update": "yarn test && yarn build && npx yalc push --scripts --update --replace",
+    "npm:publish": "yarn test && yarn build && npm publish"
   },
   "dependencies": {
     "cli-color": "^2.0.3",
-    "reflect-metadata": "^0.1.13",
-    "ts-transformer-keys": "^0.4.4",
-    "zod": "^3.21.4"
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.6.7",
     "@types/cli-color": "^2.0.2",
+    "@types/jest": "^29.5.3",
+    "@types/node": "^20.4.10",
     "@typescript-eslint/eslint-plugin": "^5.59.11",
     "@typescript-eslint/parser": "^5.59.11",
     "commitlint": "^17.6.5",
@@ -57,9 +60,14 @@
     "eslint-plugin-unused-imports": "^3.0.0",
     "husky": "^8.0.3",
     "inversify": "^6.0.1",
+    "jest": "^29.6.2",
+    "jest-coverage-badges": "^1.1.2",
     "prettier": "^2.8.8",
-    "ts-patch": "^3.0.2",
-    "typescript": "^5.1.6"
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "ts-transformer-keys": "^0.4.4",
+    "ttypescript": "^1.5.15",
+    "typescript": "^4.9.5"
   },
   "peerDependencies": {
     "inversify": "^6.0.1"
