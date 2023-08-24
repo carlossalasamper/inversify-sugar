@@ -31,6 +31,7 @@
     "container"
   ],
   "scripts": {
+    "prepare": "husky install",
     "lint": "eslint . --ext .ts",
     "test:unit": "jest --config ./jest.unit.config.ts --coverage && jest-coverage-badges --input ./coverage/coverage-summary.json --output ./assets/badges/coverage",
     "test:integration": "jest --config ./jest.integration.config.ts",
