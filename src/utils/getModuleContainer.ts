@@ -9,5 +9,5 @@ export default function getModuleContainer(Module: Newable) {
     MODULE_METADATA_KEYS
   );
 
-  return metadata.sharedContainer;
+  return metadata.container;
 }

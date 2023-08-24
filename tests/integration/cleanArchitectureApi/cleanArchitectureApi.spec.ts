@@ -2,6 +2,7 @@ import { Container } from "inversify";
 import { InversifySugar, getModuleContainer } from "../../../src";
 import { AppModule } from "./src/AppModule";
 import { App } from "./src/App";
+import { PROVIDED_TAG } from "../../../src/utils/constants";
 
 describe("authApi", () => {
   beforeAll(() => {
@@ -12,7 +13,7 @@ describe("authApi", () => {
 
   it("Should resolve all dependencies properly.", () => {
     const appModuleContainer = getModuleContainer(AppModule);
-    const app = appModuleContainer.get(App);
+    const app = appModuleContainer.getTagged(App, PROVIDED_TAG, true);
 
     expect(appModuleContainer).toBeInstanceOf(Container);
     expect(app).toBeInstanceOf(App);

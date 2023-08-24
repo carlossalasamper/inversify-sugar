@@ -31,8 +31,7 @@ export default interface ModuleMetadata {
   id: number;
   isModule: true;
   isBinded: boolean;
-  privateContainer: Container;
-  sharedContainer: Container;
+  container: Container;
   imports: Newable[];
   providers: Provider[];
   globalProviders: Provider[];

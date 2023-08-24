@@ -6,7 +6,7 @@ import {
   NewableProvider,
   ValueProvider,
 } from "../types/Provider";
-import { MODULE_METADATA_KEYS } from "./constants";
+import { MODULE_METADATA_KEYS, PROVIDED_TAG } from "./constants";
 import getAllMetadata from "./getAllMetadata";
 import setScope from "./setScope";
 import isClassProvider from "./validation/isClassProvider";
@@ -19,12 +19,15 @@ export const bindProviderToModule = (provider: Provider, Module: Newable) => {
     Module.prototype,
     MODULE_METADATA_KEYS
   );
-  const { privateContainer: container } = metatadata;
+  const { container } = metatadata;
 
   if (isNewableProvider(provider)) {
     const newableProvider = provider as NewableProvider;
 
-    setScope(container.bind(newableProvider).toSelf());
+    setScope(container.bind(newableProvider).toSelf()).whenTargetTagged(
+      PROVIDED_TAG,
+      true
+    );
   } else if (isClassProvider(provider)) {
     const classProvider = provider as ClassProvider;
 
@@ -33,18 +36,20 @@ export const bindProviderToModule = (provider: Provider, Module: Newable) => {
         ? container.bind(classProvider.provide).to(classProvider.useClass)
         : container.bind(classProvider.useClass).toSelf(),
       classProvider.scope
-    );
+    ).whenTargetTagged(PROVIDED_TAG, true);
   } else if (isValueProvider(provider)) {
     const valueProvider = provider as ValueProvider;
 
     container
       .bind(valueProvider.provide)
-      .toConstantValue(valueProvider.useValue);
+      .toConstantValue(valueProvider.useValue)
+      .whenTargetTagged(PROVIDED_TAG, true);
   } else if (isFactoryProvider(provider)) {
     const factoryProvider = provider as FactoryProvider;
 
     container
       .bind(factoryProvider.provide)
-      .toFactory(factoryProvider.useFactory);
+      .toFactory(factoryProvider.useFactory)
+      .whenTargetTagged(PROVIDED_TAG, true);
   }
 };

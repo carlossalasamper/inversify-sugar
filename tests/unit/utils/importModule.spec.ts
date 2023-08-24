@@ -3,6 +3,8 @@ import { InversifySugar, module } from "../../../src";
 import getModuleContainer from "../../../src/utils/getModuleContainer";
 import importModule from "../../../src/utils/importModule";
 import messagesMap from "../../../src/utils/messagesMap";
+import { IMPORTED_TAG } from "../../../src/utils/constants";
+import provided from "../../../src/decorators/provided";
 
 @injectable()
 class TestService {}
@@ -146,7 +148,9 @@ describe("importModule", () => {
 
     @injectable()
     class TestService {
-      constructor(@inject(AService) public readonly aService: AService) {}
+      constructor(
+        @inject(AService) @provided public readonly aService: AService
+      ) {}
     }
 
     @module({
@@ -164,7 +168,9 @@ describe("importModule", () => {
 
     const container = getModuleContainer(RootModule);
 
-    expect(container.get(TestService).aService).toBeInstanceOf(AService);
+    expect(
+      container.getTagged(TestService, IMPORTED_TAG, true).aService
+    ).toBeInstanceOf(AService);
   });
 
   it("Should resolve dependencies of DetailedExportedProvider multiple.", () => {
@@ -204,7 +210,11 @@ describe("importModule", () => {
     importModule(RootModule, true);
 
     const container = getModuleContainer(RootModule);
-    const resolvedProviders = container.get(ProviderToken);
+    const resolvedProviders = container.getTagged(
+      ProviderToken,
+      IMPORTED_TAG,
+      true
+    );
 
     expect(resolvedProviders).toHaveLength(2);
   });
@@ -343,8 +353,8 @@ describe("importModule", () => {
 
     importModule(RootModule, false);
 
-    expect(getModuleContainer(RootModule).get(TestService)).toBeInstanceOf(
-      TestService
-    );
+    expect(
+      getModuleContainer(RootModule).getTagged(TestService, IMPORTED_TAG, true)
+    ).toBeInstanceOf(TestService);
   });
 });

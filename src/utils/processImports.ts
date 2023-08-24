@@ -15,7 +15,7 @@ export default function processImports(
   Module: Newable,
   imports: Newable[]
 ): ExportedProviderRef[] {
-  const { sharedContainer } = getAllMetadata<ModuleMetadata>(
+  const { container } = getAllMetadata<ModuleMetadata>(
     Module.prototype,
     MODULE_METADATA_KEYS
   );
@@ -65,7 +65,7 @@ export default function processImports(
 
     reducedRefs.push(reducedRef);
 
-    bindExportedProviderRef(reducedRef, sharedContainer);
+    bindExportedProviderRef(reducedRef, container);
   }
 
   return reducedRefs;

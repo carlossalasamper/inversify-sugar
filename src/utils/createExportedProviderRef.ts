@@ -5,7 +5,7 @@ import ExportedProvider, {
 } from "../types/ExportedProvider";
 import ExportedProviderRef from "../types/ExportedProviderRef";
 import ModuleMetadata from "../types/ModuleMetadata";
-import { MODULE_METADATA_KEYS } from "./constants";
+import { IMPORTED_TAG, MODULE_METADATA_KEYS, PROVIDED_TAG } from "./constants";
 import getAllMetadata from "./getAllMetadata";
 import messagesMap from "./messagesMap";
 import isDetailedExportedProvider from "./validation/isDetailedExportedProvider";
@@ -29,8 +29,21 @@ export default function createExportedProviderRef(
         }
   ) as DetailedExportedProvider;
   const isBound = detailedExportedProvider.deep
-    ? metadata.sharedContainer.isBound(detailedExportedProvider.provide)
-    : metadata.privateContainer.isBound(detailedExportedProvider.provide);
+    ? metadata.container.isBoundTagged(
+        detailedExportedProvider.provide,
+        PROVIDED_TAG,
+        true
+      ) &&
+      metadata.container.isBoundTagged(
+        detailedExportedProvider.provide,
+        IMPORTED_TAG,
+        true
+      )
+    : metadata.container.isBoundTagged(
+        detailedExportedProvider.provide,
+        PROVIDED_TAG,
+        true
+      );
   const getValue = () => {
     let result;
 
@@ -39,18 +52,32 @@ export default function createExportedProviderRef(
         result = [];
 
         result.push(
-          ...metadata.privateContainer.getAll(detailedExportedProvider.provide)
+          ...metadata.container.getAllTagged(
+            detailedExportedProvider.provide,
+            PROVIDED_TAG,
+            true
+          )
         );
         result.push(
-          ...metadata.sharedContainer.getAll(detailedExportedProvider.provide)
+          ...metadata.container.getAllTagged(
+            detailedExportedProvider.provide,
+            IMPORTED_TAG,
+            true
+          )
         );
       } else {
-        result = metadata.privateContainer.getAll(
-          detailedExportedProvider.provide
+        result = metadata.container.getAllTagged(
+          detailedExportedProvider.provide,
+          PROVIDED_TAG,
+          true
         );
       }
     } else {
-      result = metadata.privateContainer.get(detailedExportedProvider.provide);
+      result = metadata.container.getTagged(
+        detailedExportedProvider.provide,
+        PROVIDED_TAG,
+        true
+      );
     }
 
     return result;

@@ -3,7 +3,6 @@ import { Container } from "inversify";
 import { Newable } from "../types";
 import ModuleMetadata, { ModuleMetadataArgs } from "../types/ModuleMetadata";
 import { InversifySugar } from "../utils";
-import loggerMiddleware from "../middlewares/loggerMiddleware";
 
 export default function module({
   imports = [],
@@ -21,19 +20,14 @@ export default function module({
       id: new Date().getTime(),
       isModule: true,
       isBinded: false,
-      privateContainer: new Container(),
-      sharedContainer: new Container(),
+      container: new Container(),
       imports,
       providers: scopedProviders,
       globalProviders,
       exports,
     };
 
-    metadata.privateContainer.parent = InversifySugar.globalContainer;
-    metadata.sharedContainer.parent = metadata.privateContainer;
-
-    metadata.privateContainer.applyMiddleware(loggerMiddleware);
-    metadata.sharedContainer.applyMiddleware(loggerMiddleware);
+    metadata.container.parent = InversifySugar.globalContainer;
 
     for (const key in metadata) {
       if (metadata.hasOwnProperty(key)) {
