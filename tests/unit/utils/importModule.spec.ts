@@ -148,9 +148,7 @@ describe("importModule", () => {
 
     @injectable()
     class TestService {
-      constructor(
-        @inject(AService) @provided public readonly aService: AService
-      ) {}
+      constructor(@provided(AService) public readonly aService: AService) {}
     }
 
     @module({
