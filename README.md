@@ -23,6 +23,9 @@
     - [Providers](#providers)
     - [Exports](#exports)
     - [Get the Container of a Module](#get-the-container-of-a-module)
+  - [Injection](#injection)
+    - [Provider Injection](#provider-injection)
+    - [Imported Provider Injection](#imported-provider-injection)
 - [Testing](#testing)
 - [Support the Project](#support-the-project)
 - [License](#license)
@@ -166,7 +169,7 @@ import { module } from "inversify-sugar";
 import { CatsController } from "./CatsController";
 import { CatsService } from "./CatsService";
 
-@Module({
+@module({
   providers: [CatsController, CatsService],
 })
 export class CatsModule {}
@@ -232,6 +235,8 @@ export class AppModule {}
 
 The relationship between modules would be as follows:
 
+</br>
+
 <div align="center">
 <img src="./assets/images/inversify-sugar-modules.png" style="max-width: 900px; width: 100%;">
 </div>
@@ -263,7 +268,7 @@ You can define a provider in different ways depending on the desired instantiati
 
 #### Exports
 
-The subset of providers that are provided by this module and should be available in other modules which import this module. You can use either a ExportedProvider object or just its token (provide value).
+The subset of providers that will be e available in other modules which import this module. You can use either a `ExportedProvider` object or just its token (provide value).
 
 If you export a provider with an injection token that is not found in the module's dependency container, an error will be thrown.
 
@@ -272,7 +277,12 @@ If you export a provider with an injection token that is not found in the module
 Ideally we shouldn't be accessing module containers directly to get a service. In either case, the `getModuleContainer` function allows you to get the container of a module in case you need to access it in an statement.
 
 ```typescript
-import { getModuleContainer, module, InversifySugar } from "inversify-sugar";
+import {
+  getModuleContainer,
+  module,
+  InversifySugar,
+  PROVIDED_TAG,
+} from "inversify-sugar";
 import { injectable } from "inversify";
 
 @injectable()
@@ -290,9 +300,106 @@ class AppModule {}
 
 InversifySugar.run(AppModule);
 
-// Accessing the container of a imported module
+// Accessing the container of a module
 const testModuleContainer = getModuleContainer(TestModule);
-const testService = testModuleContainer.get(TestService);
+const testService = testModuleContainer.getTagged(
+  TestService,
+  PROVIDED_TAG,
+  true
+);
+```
+
+### Injection
+
+When injecting the dependencies, either as a parameter in the constructor of a class, or as a property of the class, we have to use 2 sets of decorators that we have prepared.
+
+You will have to use one or the other depending on how the dependency has been registered in the module.
+
+> ⚠️ Splitting into different decorators for dependency injection adds extra complexity to the code, compared to Angular or NestJS injection systems. This is why the injection API may change in the future.
+>
+> In any case, this solution is not a whim, since to organize the content of the container of each module, the [tagged bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/tagged_bindings.md) feature of Inversify is used.
+
+> ⚠️ It remains to implement the decorators equivalent to Inversify's `@multiInject` decorator.
+
+#### Provider Injection
+
+We will use the `@provided` decorator when we want to inject a provider into another provider that belongs to the same module (`CatsModule`).
+
+```typescript
+import { injectable } from "inversify";
+
+@injectable()
+export class CatsService {}
+```
+
+```typescript
+import { injectable } from "inversify";
+import { provided } from "inversify-sugar";
+import { CatsService } from "./cats/CatsService";
+
+@injectable()
+export class CatsController {
+  constructor(
+    @provided(CatsService) public readonly catsService: CatsService
+  ) {}
+}
+```
+
+```typescript
+import { module } from "inversify-sugar";
+import { CatsController } from "./CatsController";
+import { CatsService } from "./CatsService";
+
+@module({
+  providers: [CatsController, CatsService],
+})
+export class CatsModule {}
+```
+
+#### Imported Provider Injection
+
+We will use the `@imported` decorator when we want to inject a provider exported by `CatsModule` into a provider belonging to `AppModule` which is importing `CatsModule`.
+
+```typescript
+import { injectable } from "inversify";
+
+@injectable()
+export class CatsService {}
+```
+
+```typescript
+import { module } from "inversify-sugar";
+import { CatsController } from "./CatsController";
+import { CatsService } from "./CatsService";
+
+@module({
+  providers: [CatsService],
+  exported: [CatsService],
+})
+export class CatsModule {}
+```
+
+```typescript
+import { injectable } from "inversify";
+import { imported } from "inversify-sugar";
+import { CatsService } from "./cats/CatsService";
+
+@injectable()
+export class AppController {
+  constructor(
+    @imported(CatsService) public readonly catsService: CatsService
+  ) {}
+}
+```
+
+```typescript
+import { module } from "inversify-sugar";
+import { CatsModule } from "./cats/CatsModule";
+
+@module({
+  imports: [CatsModule],
+})
+export class AppModule {}
 ```
 
 ## Testing
