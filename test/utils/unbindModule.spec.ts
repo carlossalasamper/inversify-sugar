@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
-import { InversifySugar, getModuleContainer, module } from "../../../src";
-import importModule from "../../../src/utils/importModule";
-import unbindModule from "../../../src/utils/unbindModule";
-import messagesMap from "../../../src/utils/messagesMap";
+import { InversifySugar, getModuleContainer, module } from "../../src";
+import importModule from "../../src/utils/importModule";
+import unbindModule from "../../src/utils/unbindModule";
+import messagesMap from "../../src/utils/messagesMap";
 
 describe("unbindModule", () => {
   beforeEach(() => {

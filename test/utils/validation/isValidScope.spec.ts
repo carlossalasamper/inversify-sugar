@@ -1,6 +1,6 @@
 import isValidScope, {
   scopeKeys,
-} from "../../../../src/utils/validation/isValidScope";
+} from "../../../src/utils/validation/isValidScope";
 
 describe("isValidScope", () => {
   it("Should return true if value is included in scope options array.", () => {

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import isValidProvide from "../../../../src/utils/validation/isValidProvide";
+import isValidProvide from "../../../src/utils/validation/isValidProvide";
 
 describe("isValidProvide", () => {
   it("Should return true if value is a string.", () => {

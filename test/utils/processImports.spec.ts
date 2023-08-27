@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
-import processImports from "../../../src/utils/processImports";
-import { module } from "../../../src";
-import ExportedProviderRef from "../../../src/types/ExportedProviderRef";
+import processImports from "../../src/utils/processImports";
+import { module } from "../../src";
+import ExportedProviderRef from "../../src/types/ExportedProviderRef";
 
 describe("processImports", () => {
   it("Should group refs with the same provider.", () => {

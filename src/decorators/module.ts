@@ -6,14 +6,14 @@ import { InversifySugar } from "../utils";
 
 export default function module({
   imports = [],
-  providers = [],
+  providers: allProviders = [],
   exports = [],
 }: ModuleMetadataArgs) {
   return (target: Newable) => {
-    const scopedProviders = providers.filter(
+    const providers = allProviders.filter(
       (provider: any) => !provider.isGlobal
     );
-    const globalProviders = providers.filter(
+    const globalProviders = allProviders.filter(
       (provider: any) => !!provider.isGlobal
     );
     const metadata: ModuleMetadata = {
@@ -22,7 +22,7 @@ export default function module({
       isBinded: false,
       container: new Container(),
       imports,
-      providers: scopedProviders,
+      providers,
       globalProviders,
       exports,
     };

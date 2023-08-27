@@ -1,10 +1,10 @@
 import { injectable } from "inversify";
-import { DetailedExportedProvider } from "../../../src/types/ExportedProvider";
-import createExportedProviderRef from "../../../src/utils/createExportedProviderRef";
-import { bindProviderToModule } from "../../../src/utils/bindProviderToModule";
-import { getModuleContainer, module } from "../../../src";
-import importModule from "../../../src/utils/importModule";
-import { IMPORTED_TAG } from "../../../src/utils/constants";
+import { DetailedExportedProvider } from "../../src/types/ExportedProvider";
+import createExportedProviderRef from "../../src/utils/createExportedProviderRef";
+import { bindProviderToModule } from "../../src/utils/bindProviderToModule";
+import { getModuleContainer, module } from "../../src";
+import importModule from "../../src/utils/importModule";
+import { IMPORTED_TAG } from "../../src/utils/constants";
 
 describe("createExportedProviderRef", () => {
   it("Should create a simple DetailedExportedProvider ref.", () => {

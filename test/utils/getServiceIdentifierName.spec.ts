@@ -1,4 +1,4 @@
-import getServiceIdentifierName from "../../../src/utils/getServiceIdentifierName";
+import getServiceIdentifierName from "../../src/utils/getServiceIdentifierName";
 
 describe("getServiceIdentifierName", () => {
   it("should return class name if serviceIdentifier is a class", () => {

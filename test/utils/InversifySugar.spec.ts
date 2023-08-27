@@ -1,6 +1,6 @@
-import { Newable, InversifySugar, module } from "../../../src";
-import messagesMap from "../../../src/utils/messagesMap";
-import inversifySugarOptions from "../../../src/utils/inversifySugarOptions";
+import { Newable, InversifySugar, module } from "../../src";
+import messagesMap from "../../src/utils/messagesMap";
+import inversifySugarOptions from "../../src/utils/inversifySugarOptions";
 
 @module({})
 class ModuleA {}

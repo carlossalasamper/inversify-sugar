@@ -3,35 +3,28 @@ import {
   InversifySugar,
   PROVIDED_TAG,
   getModuleContainer,
-  imported,
   module,
-} from "../../../src";
+} from "../../src";
+import provided from "../../src/decorators/provided";
 
-describe("@imported", () => {
+describe("@provided", () => {
   afterAll(() => {
     InversifySugar.reset();
   });
 
-  it("Should resolve a imported provider injected into another provider", () => {
+  it("Should resolve a module provider injected into another provider", () => {
     @injectable()
     class TestService {}
 
-    @module({
-      providers: [TestService],
-      exports: [TestService],
-    })
-    class TestModule {}
-
     @injectable()
-    class AppController {
+    class TestController {
       constructor(
-        @imported(TestService) public readonly testService: TestService
+        @provided(TestService) public readonly testService: TestService
       ) {}
     }
 
     @module({
-      imports: [TestModule],
-      providers: [AppController],
+      providers: [TestService, TestController],
     })
     class AppModule {}
 
@@ -40,7 +33,7 @@ describe("@imported", () => {
     const appModuleContainer = getModuleContainer(AppModule);
 
     expect(
-      appModuleContainer.getTagged(AppController, PROVIDED_TAG, true)
+      appModuleContainer.getTagged(TestController, PROVIDED_TAG, true)
         .testService
     ).toBeInstanceOf(TestService);
   });

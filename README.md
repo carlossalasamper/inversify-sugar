@@ -6,7 +6,7 @@
 <p align="center">
   <img alt="Inversify Sugar banner" src="https://raw.githubusercontent.com/carlossalasamper/inversify-sugar/master/assets/images/inversify-sugar-banner.png" style="max-width: 900px; width: 100%;" />
 </p>
-<p align="center" style="margin-top: 10px;">🧁 Sweeten up the <a href="https://inversify.io/">InversifyJS</a> syntax with this set of decorators, functions, and types built on top of the dependency container.</p>
+<p align="center" style="margin-top: 10px;">🧁 Sweeten up the <a href="https://inversify.io/">InversifyJS</a> to build hierarchical dependency systems with an elegant API.</p>
 
 ## Table of Contents
 
@@ -32,7 +32,7 @@
 
 ## Introduction
 
-Why do you need to add Inversify Sugar to your project?
+Inversify Sugar is a set of decorators, types and functions built on top of Inversify and offers an API to handle TypeScript applications with multiple dependency containers and relationships between them.
 
 Let me illustrate with a comparison.
 
@@ -282,29 +282,44 @@ import {
   module,
   InversifySugar,
   PROVIDED_TAG,
+  IMPORTED_TAG,
 } from "inversify-sugar";
 import { injectable } from "inversify";
 
 @injectable()
-class TestService {}
+class ProvidedService {}
+
+@injectable()
+class ExportedService {}
 
 @module({
-  providers: [TestService],
+  providers: [ProvidedService, ExportedService],
+  exports: [ExportedService],
 })
-class TestModule {}
+class AModule {}
 
 @module({
-  imports: [TestModule],
+  imports: [AModule],
 })
 class AppModule {}
 
 InversifySugar.run(AppModule);
 
 // Accessing the container of a module
+const appModuleContainer = getModuleContainer(AppModule);
 const testModuleContainer = getModuleContainer(TestModule);
-const testService = testModuleContainer.getTagged(
-  TestService,
+
+// Getting a service provided to module
+const providedService = testModuleContainer.getTagged(
+  ProvidedService,
   PROVIDED_TAG,
+  true
+);
+
+// Getting a provider imported to a module
+const exportedService = appModuleContainer.getTagged(
+  ExportedService,
+  IMPORTED_TAG,
   true
 );
 ```
@@ -319,13 +334,15 @@ You will have to use one or the other depending on how the dependency has been r
 >
 > In any case, this solution is not a whim, since to organize the content of the container of each module, the [tagged bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/tagged_bindings.md) feature of Inversify is used.
 
-> ⚠️ It remains to implement the decorators equivalent to Inversify's `@multiInject` decorator.
-
 #### Provider Injection
 
 We will use the `@provided` decorator when we want to inject a provider into another provider that belongs to the same module (`CatsModule`).
 
+In the same way, we can use the `@allProvided` decorator to obtain an array with all providers registered with that identifier. This would be the decorator equivalent to Inversify's `@multiInject`.
+
 ```typescript
+// cats/CatsService.ts
+
 import { injectable } from "inversify";
 
 @injectable()
@@ -333,25 +350,54 @@ export class CatsService {}
 ```
 
 ```typescript
+// cats/constants.ts
+
+export const CatNameToken = Symbol("CatName");
+```
+
+```typescript
+// cats/CatsController.ts
+
 import { injectable } from "inversify";
-import { provided } from "inversify-sugar";
-import { CatsService } from "./cats/CatsService";
+import { provided, allProvided } from "inversify-sugar";
+import { CatsService } from "./CatsService";
+import { CatNameToken } from './constants'
 
 @injectable()
 export class CatsController {
   constructor(
     @provided(CatsService) public readonly catsService: CatsService
+    @allProvided(CatNameToken) public readonly catNames: string[]
   ) {}
 }
 ```
 
+<small></small>
+
 ```typescript
+// cats/CatsModule.ts
+
 import { module } from "inversify-sugar";
 import { CatsController } from "./CatsController";
 import { CatsService } from "./CatsService";
 
 @module({
-  providers: [CatsController, CatsService],
+  providers: [
+    CatsService,
+    CatsController,
+    {
+      provide: CatNameToken,
+      useValue: "Toulouse",
+    },
+    {
+      provide: CatNameToken,
+      useValue: "Tomas O'Malley",
+    },
+    {
+      provide: CatNameToken,
+      useValue: "Duchess",
+    },
+  ],
 })
 export class CatsModule {}
 ```
@@ -361,6 +407,8 @@ export class CatsModule {}
 We will use the `@imported` decorator when we want to inject a provider exported by `CatsModule` into a provider belonging to `AppModule` which is importing `CatsModule`.
 
 ```typescript
+// cats/CatsService.ts
+
 import { injectable } from "inversify";
 
 @injectable()
@@ -368,6 +416,8 @@ export class CatsService {}
 ```
 
 ```typescript
+// cats/CatsModule.ts
+
 import { module } from "inversify-sugar";
 import { CatsController } from "./CatsController";
 import { CatsService } from "./CatsService";
@@ -380,6 +430,8 @@ export class CatsModule {}
 ```
 
 ```typescript
+// AppController.ts
+
 import { injectable } from "inversify";
 import { imported } from "inversify-sugar";
 import { CatsService } from "./cats/CatsService";
@@ -393,6 +445,8 @@ export class AppController {
 ```
 
 ```typescript
+// AppModule.ts
+
 import { module } from "inversify-sugar";
 import { CatsModule } from "./cats/CatsModule";
 
@@ -406,7 +460,7 @@ export class AppModule {}
 
 The complexity of the memory state during the execution of Inversify Sugar, managing multiple Inversify containers under the hood, is too high to ensure that it is working correctly without writing unit tests of each of the functionalities separately.
 
-For this reason, a set of tests have been written that you can consult [here](./tests).
+For this reason, a set of tests have been written that you can consult [here](./test).
 
 So you can use it without worries. You are facing a completely armored dependency system.
 

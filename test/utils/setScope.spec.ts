@@ -1,7 +1,7 @@
-import setScope from "../../../src/utils/setScope";
-import { InversifySugar } from "../../../src";
+import setScope from "../../src/utils/setScope";
+import { InversifySugar } from "../../src";
 import { Container } from "inversify";
-import inversifySugarOptions from "../../../src/utils/inversifySugarOptions";
+import inversifySugarOptions from "../../src/utils/inversifySugarOptions";
 
 class ClassA {}
 
