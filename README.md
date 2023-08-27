@@ -6,7 +6,7 @@
 <p align="center">
   <img alt="Inversify Sugar banner" src="https://raw.githubusercontent.com/carlossalasamper/inversify-sugar/master/assets/images/inversify-sugar-banner.png" style="max-width: 900px; width: 100%;" />
 </p>
-<p align="center" style="margin-top: 10px;">🧁 Sweeten up the <a href="https://inversify.io/">InversifyJS</a> to build hierarchical dependency systems with an elegant API.</p>
+<p align="center" style="margin-top: 10px;">🧁 <a href="https://inversify.io/">InversifyJS</a> framework to build hierarchical dependency systems with an elegant API.</p>
 
 ## Table of Contents
 
@@ -119,9 +119,9 @@ container.bind("DATABASE_URI").toConstantValue(process.env.DATABASE_URI);
 export container;
 ```
 
-> ⚠️ The result is a brittle dependency system that we can break just by changing the order of the imported files.
+> 😵 The result is a brittle dependency system that we can break just by changing the order of the imported files.
 
-**Inversify Sugar is a syntactic sugar** built on top of Inversify with a clear objective: to offer an API on par with the most cutting-edge dependency containers.
+**Inversify Sugar** is a framework built on top of Inversify with a clear objective: to offer an API on par with the most cutting-edge hierarchical dependency systems.
 
 Once you try it you will no longer be able to live without it.
 
@@ -131,21 +131,22 @@ Follow this small step-by-step guide to start using Inversify Sugar in your proj
 
 ### 1. Installation
 
-Add the `inversify` and `inversify-sugar` packages to your project.
+Add the `inversify-sugar` package to your project.
 
 Using yarn:
 
 ```bash
-yarn inversify inversify-sugar
+yarn inversify-sugar
 ```
 
 Or using npm:
 
 ```bash
-npm install inversify inversify-sugar
+npm install inversify-sugar
 ```
 
-Inversify Sugar installs and imports the `reflect-metadata` package under the hood, so we don't have to worry about adding any extra steps.
+- The `inversify` package is already included within `inversify-sugar` to expose only what is necessary.
+- Inversify Sugar installs and imports the `reflect-metadata` package under the hood, so we don't have to worry about adding any extra steps.
 
 ⚠️ **Important!** InversifyJS requires TypeScript >= 4.4 and the `experimentalDecorators`, `emitDecoratorMetadata` compilation options in your `tsconfig.json` file.
 
@@ -196,8 +197,8 @@ import { InversifySugar } from "inversify-sugar";
 import { AppModule } from "./AppModule";
 
 // Configure the InversifySugar instance
-InversifySugar.debug = process.env.NODE_ENV === "development";
-InversifySugar.defaultScope = "Singleton";
+InversifySugar.options.debug = process.env.NODE_ENV === "development";
+InversifySugar.options.defaultScope = "Singleton";
 
 // Entrypoint
 InversifySugar.run(AppModule);
@@ -280,11 +281,11 @@ Ideally we shouldn't be accessing module containers directly to get a service. I
 import {
   getModuleContainer,
   module,
+  injectable,
   InversifySugar,
   PROVIDED_TAG,
   IMPORTED_TAG,
 } from "inversify-sugar";
-import { injectable } from "inversify";
 
 @injectable()
 class ProvidedService {}
@@ -343,7 +344,7 @@ In the same way, we can use the `@allProvided` decorator to obtain an array with
 ```typescript
 // cats/CatsService.ts
 
-import { injectable } from "inversify";
+import { injectable } from "inversify-sugar";
 
 @injectable()
 export class CatsService {}
@@ -358,8 +359,7 @@ export const CatNameToken = Symbol("CatName");
 ```typescript
 // cats/CatsController.ts
 
-import { injectable } from "inversify";
-import { provided, allProvided } from "inversify-sugar";
+import { injectable, provided, allProvided } from "inversify-sugar";
 import { CatsService } from "./CatsService";
 import { CatNameToken } from './constants'
 
@@ -409,7 +409,7 @@ We will use the `@imported` decorator when we want to inject a provider exported
 ```typescript
 // cats/CatsService.ts
 
-import { injectable } from "inversify";
+import { injectable } from "inversify-sugar";
 
 @injectable()
 export class CatsService {}
@@ -432,8 +432,7 @@ export class CatsModule {}
 ```typescript
 // AppController.ts
 
-import { injectable } from "inversify";
-import { imported } from "inversify-sugar";
+import { injectable, imported } from "inversify-sugar";
 import { CatsService } from "./cats/CatsService";
 
 @injectable()
