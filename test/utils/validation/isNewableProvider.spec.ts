@@ -1,4 +1,4 @@
-import isNewableProvider from "../../../../src/utils/validation/isNewableProvider";
+import isNewableProvider from "../../../src/utils/validation/isNewableProvider";
 
 describe("isNewableProvider", () => {
   it("Should return true if the object is a NewableProvider.", () => {

@@ -1,8 +1,8 @@
 import { Container } from "inversify";
-import { module } from "../../../src";
-import ModuleMetadata from "../../../src/types/ModuleMetadata";
-import { MODULE_METADATA_KEYS } from "../../../src/utils/constants";
-import getAllMetadata from "../../../src/utils/getAllMetadata";
+import { module } from "../../src";
+import ModuleMetadata from "../../src/types/ModuleMetadata";
+import { MODULE_METADATA_KEYS } from "../../src/utils/constants";
+import getAllMetadata from "../../src/utils/getAllMetadata";
 
 @module({})
 class EmptyMetadataModule {}

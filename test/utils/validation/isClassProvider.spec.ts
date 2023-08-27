@@ -1,5 +1,5 @@
-import { ClassProvider } from "../../../../src/types/Provider";
-import isClassProvider from "../../../../src/utils/validation/isClassProvider";
+import { ClassProvider } from "../../../src/types/Provider";
+import isClassProvider from "../../../src/utils/validation/isClassProvider";
 
 describe("isClassProvider", () => {
   it("Should return true if the object is a ClassProvider.", () => {

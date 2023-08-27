@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import isUndefined from "../../../../src/utils/validation/isUndefined";
+import isUndefined from "../../../src/utils/validation/isUndefined";
 
 describe("isUndefined", () => {
   it("Should return true if value is undefined.", () => {

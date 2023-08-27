@@ -1,10 +1,10 @@
 import { inject, injectable } from "inversify";
-import { InversifySugar, module } from "../../../src";
-import getModuleContainer from "../../../src/utils/getModuleContainer";
-import importModule from "../../../src/utils/importModule";
-import messagesMap from "../../../src/utils/messagesMap";
-import { IMPORTED_TAG } from "../../../src/utils/constants";
-import provided from "../../../src/decorators/provided";
+import { InversifySugar, module } from "../../src";
+import getModuleContainer from "../../src/utils/getModuleContainer";
+import importModule from "../../src/utils/importModule";
+import messagesMap from "../../src/utils/messagesMap";
+import { IMPORTED_TAG } from "../../src/utils/constants";
+import provided from "../../src/decorators/provided";
 
 @injectable()
 class TestService {}

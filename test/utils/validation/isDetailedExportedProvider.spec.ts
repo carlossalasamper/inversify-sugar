@@ -1,8 +1,8 @@
 import {
   DetailedExportedProvider,
   TokenExportedProvider,
-} from "../../../../src/types/ExportedProvider";
-import isDetailedExportedProvider from "../../../../src/utils/validation/isDetailedExportedProvider";
+} from "../../../src/types/ExportedProvider";
+import isDetailedExportedProvider from "../../../src/utils/validation/isDetailedExportedProvider";
 
 describe("isDetailedExportedProvider", () => {
   it("Should return true if the data is a DetailedExportedProvider.", () => {

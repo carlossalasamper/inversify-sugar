@@ -4,10 +4,10 @@ import {
   NewableProvider,
   FactoryProvider,
   ValueProvider,
-} from "../../../src/types/Provider";
-import { getModuleContainer, module } from "../../../src";
-import { bindProviderToContainer } from "../../../src/utils/bindProviderToContainer";
-import { bindProviderToModule } from "../../../src/utils/bindProviderToModule";
+} from "../../src/types/Provider";
+import { getModuleContainer, module } from "../../src";
+import { bindProviderToContainer } from "../../src/utils/bindProviderToContainer";
+import { bindProviderToModule } from "../../src/utils/bindProviderToModule";
 
 const TestClassToken = Symbol();
 

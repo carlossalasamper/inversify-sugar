@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FactoryProvider } from "../../../../src/types/Provider";
-import isFactoryProvider from "../../../../src/utils/validation/isFactoryProvider";
+import { FactoryProvider } from "../../../src/types/Provider";
+import isFactoryProvider from "../../../src/utils/validation/isFactoryProvider";
 
 describe("isFactoryProvider", () => {
   it("Should return true if the object is a FactoryProvider.", () => {

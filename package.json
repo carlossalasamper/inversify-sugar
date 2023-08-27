@@ -1,7 +1,7 @@
 {
   "name": "inversify-sugar",
-  "version": "0.3.0",
-  "description": "🧁 Sweeten up the InversifyJS syntax with this set of decorators, functions, and types built on top of the dependency container.",
+  "version": "0.4.0",
+  "description": "🧁 Sweeten up the InversifyJS syntax to build hierarchical dependency systems with an elegant API.",
   "author": {
     "name": "Carlos Sala Samper",
     "url": "https://godofprogramming.com"
@@ -27,6 +27,9 @@
     "javascript",
     "typescript",
     "ioc",
+    "nest",
+    "nestjs",
+    "angular",
     "inversion of control",
     "container"
   ],

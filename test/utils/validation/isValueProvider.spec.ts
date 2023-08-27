@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ValueProvider } from "../../../../src/types/Provider";
-import isValueProvider from "../../../../src/utils/validation/isValueProvider";
+import { ValueProvider } from "../../../src/types/Provider";
+import isValueProvider from "../../../src/utils/validation/isValueProvider";
 
 describe("isValueProvider", () => {
   it("Should return true if value is a ValueProvider.", () => {
