@@ -1,10 +1,5 @@
 import { injectable } from "inversify";
-import {
-  InversifySugar,
-  PROVIDED_TAG,
-  getModuleContainer,
-  module,
-} from "../../src";
+import { InversifySugar, getModuleContainer, module } from "../../src";
 import allProvided from "../../src/decorators/allProvided";
 
 describe("@allProvided", () => {
@@ -33,8 +28,7 @@ describe("@allProvided", () => {
     const appModuleContainer = getModuleContainer(AppModule);
 
     expect(
-      appModuleContainer.getTagged(TestController, PROVIDED_TAG, true)
-        .testServices
+      appModuleContainer.getProvided(TestController).testServices
     ).toHaveLength(3);
   });
 });

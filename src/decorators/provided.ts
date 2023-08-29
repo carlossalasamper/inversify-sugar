@@ -1,6 +1,6 @@
 import { inject, interfaces, tagged } from "inversify";
 import { DecoratorTarget } from "inversify/lib/annotation/decorator_utils";
-import { PROVIDED_TAG } from "../utils";
+import { PROVIDED_TAG } from "../utils/constants";
 
 export default function provide<T = unknown>(
   serviceIdentifier: interfaces.ServiceIdentifier
