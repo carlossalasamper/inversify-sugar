@@ -1,5 +1,5 @@
 import Provider from "./Provider";
-import { Newable } from ".";
+import { ModuleAddon, Newable } from ".";
 import ExportedProvider from "./ExportedProvider";
 import { ModuleContainer } from "../utils";
 
@@ -25,6 +25,11 @@ export interface ModuleMetadataArgs {
    * @description Optional list of providers exported from this module.
    */
   exports?: ExportedProvider[];
+
+  /**
+   * @description Optional list of ModuleAddon to be applied to this module.
+   */
+  addons?: ReturnType<ModuleAddon>[];
 }
 
 export default interface ModuleMetadata {
