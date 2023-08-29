@@ -163,7 +163,7 @@ npm install inversify-sugar
 
 All dependencies defined in the `providers` field of this module are only visible to each other.
 
-We can understand each module more or less as a container of Inversify.
+We can understand each module more or less as a compartmentalized container of Inversify. We will explain this later.
 
 ```typescript
 import { module } from "inversify-sugar";
@@ -275,7 +275,7 @@ If you export a provider with an injection token that is not found in the module
 
 #### Get the Container of a Module
 
-Ideally we shouldn't be accessing module containers directly to get a service. In either case, the `getModuleContainer` function allows you to get the container of a module in case you need to access it in an statement.
+**Ideally we shouldn't be accessing module containers directly to get a service**. In either case, the `getModuleContainer` function allows you to get the container of a module in case you need to access it in an statement.
 
 ```typescript
 import {
@@ -283,8 +283,6 @@ import {
   module,
   injectable,
   InversifySugar,
-  PROVIDED_TAG,
-  IMPORTED_TAG,
 } from "inversify-sugar";
 
 @injectable()
@@ -311,19 +309,35 @@ const appModuleContainer = getModuleContainer(AppModule);
 const testModuleContainer = getModuleContainer(TestModule);
 
 // Getting a service provided to module
-const providedService = testModuleContainer.getTagged(
-  ProvidedService,
-  PROVIDED_TAG,
-  true
-);
+const providedService = testModuleContainer.getProvided(ProvidedService);
 
 // Getting a provider imported to a module
-const exportedService = appModuleContainer.getTagged(
-  ExportedService,
-  IMPORTED_TAG,
-  true
-);
+const exportedService = appModuleContainer.getImported(ExportedService);
 ```
+
+The container returned by the `getModuleContainer()` function is an extension of Inversify's `Container` class that adds the necessary methods to access dependencies found both in the providers section of the container and in the container section of services imported by other modules.
+
+It has been necessary for us to separate the providers declared in one module from those imported from another module in these compartments in order to implement the functionality of exporting imported suppliers (re-exporting).
+
+#### ModuleContainer
+
+This is the class extending the container and these are the new methods it adds:
+
+```typescript
+getProvided<T = unknown>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T
+```
+
+```typescript
+getAllProvided<T = unknown>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[]
+```
+
+```typescript
+getImported<T = unknown>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T | T[]
+```
+
+> ⚠️ For the moment the `getImported()` function will return a single value or an array depending on how many providers with the same `ServiceIdentifier` have been imported into the module.
+>
+> However, we do not rule out that this API changes in the future.
 
 ### Injection
 
@@ -454,6 +468,10 @@ import { CatsModule } from "./cats/CatsModule";
 })
 export class AppModule {}
 ```
+
+> ⚠️ As you can see there is no `@allImported()` decorator.
+>
+> As with the `ModuleContainer.getImported()` method, the `@imported()` decorator will return a single value or an >array depending on how many providers with the specified `ServiceIdentifier` have been imported into the module.
 
 ## Testing
 

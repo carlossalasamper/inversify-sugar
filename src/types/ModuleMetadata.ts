@@ -1,7 +1,7 @@
 import Provider from "./Provider";
 import { Newable } from ".";
 import ExportedProvider from "./ExportedProvider";
-import { Container } from "inversify";
+import { ModuleContainer } from "../utils";
 
 /**
  * @description Interface defining the property object that describes the module.
@@ -31,7 +31,7 @@ export default interface ModuleMetadata {
   id: number;
   isModule: true;
   isBinded: boolean;
-  container: Container;
+  container: ModuleContainer;
   imports: Newable[];
   providers: Provider[];
   globalProviders: Provider[];

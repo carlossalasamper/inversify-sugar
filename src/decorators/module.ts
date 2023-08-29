@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Container } from "inversify";
 import { Newable } from "../types";
 import ModuleMetadata, { ModuleMetadataArgs } from "../types/ModuleMetadata";
-import { InversifySugar } from "../utils";
+import { InversifySugar, ModuleContainer } from "../utils";
 
 export default function module({
   imports = [],
@@ -20,7 +19,7 @@ export default function module({
       id: new Date().getTime(),
       isModule: true,
       isBinded: false,
-      container: new Container(),
+      container: new ModuleContainer(),
       imports,
       providers,
       globalProviders,
