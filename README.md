@@ -22,7 +22,9 @@
     - [Imports](#imports)
     - [Providers](#providers)
     - [Exports](#exports)
+    - [Addons](#addons)
     - [Get the Container of a Module](#get-the-container-of-a-module)
+    - [ModuleContainer](#modulecontainer)
   - [Injection](#injection)
     - [Provider Injection](#provider-injection)
     - [Imported Provider Injection](#imported-provider-injection)
@@ -253,7 +255,7 @@ import { AppModule } from "./AppModule";
 InversifySugar.run(AppModule);
 ```
 
-The module decorator accepts an object argument with the `imports`, `providers` and `exports` properties.
+The module decorator accepts an object argument with the `imports`, `providers`, `exports` and `addons` properties.
 
 Next we will explain what each of these properties is for.
 
@@ -272,6 +274,42 @@ You can define a provider in different ways depending on the desired instantiati
 The subset of providers that will be e available in other modules which import this module. You can use either a `ExportedProvider` object or just its token (provide value).
 
 If you export a provider with an injection token that is not found in the module's dependency container, an error will be thrown.
+
+#### Addons
+
+A `ModuleAddon` is a configuration for a module that we can reuse in different modules of our application.
+
+The `@module()` decorator accepts the `addons` property which is an array of settings to be concatenated with the main module settings.
+
+The following `publicAddon` addon is a simple example of a `ModuleAddon` that registers a provider and also adds it to `exports` to expose it to the module's public API.
+
+```typescript
+import { ModuleAddon } from "inversify-sugar";
+
+export const publicAddon: ModuleAddon<Provider[]> = (
+  ...providers
+) {
+  return () => {
+    return {
+      providers,
+      exports: providers,
+    };
+  };
+}
+```
+
+```typescript
+import { publicAddon } from "./addons/publicAddon";
+import { Service1 } from "./services/Service1";
+import { Service2 } from "./services/Service2";
+
+@module({
+  addons: [publicAddon(Service1, Service2)],
+})
+export class AppModule {}
+```
+
+You can write as many addons as you need to reuse analog configurations between modules.
 
 #### Get the Container of a Module
 
