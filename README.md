@@ -121,7 +121,7 @@ container.bind("DATABASE_URI").toConstantValue(process.env.DATABASE_URI);
 export container;
 ```
 
-> 😵 The result is a brittle dependency system that we can break just by changing the order of the imported files.
+> 😵 The result is a brittle dependency system that we can break just by changing the order of the imported files. And we have to handle all the containers manually.
 
 **Inversify Sugar** is a framework built on top of Inversify with a clear objective: to offer an API on par with the most cutting-edge hierarchical dependency systems.
 
@@ -263,17 +263,144 @@ Next we will explain what each of these properties is for.
 
 The list of imported modules that export the providers which are required in this module.
 
+```typescript
+@module({
+  imports: [CatsModule],
+})
+export class AppModule {}
+```
+
 #### Providers
 
 The providers that will be instantiated when the module is registered. These providers may be shared at least across this module.
 
-You can define a provider in different ways depending on the desired instantiation behavior.
+You can define a provider in different ways depending on the desired instantiation method.
+
+```typescript
+@module({
+  providers: [
+    CatsService,
+    {
+      provide: CatsServiceToken,
+      useClass: CatsService,
+    },
+    {
+      provide: CatNameToken,
+      useValue: "Toulouse",
+    },
+    {
+      provide: CatNameFactoryToken,
+      useFactory:
+        (context) =>
+        (...args) =>
+          "New name",
+    },
+  ],
+})
+export class CatsModule {}
+```
 
 #### Exports
 
 The subset of providers that will be e available in other modules which import this module. You can use either a `ExportedProvider` object or just its token (provide value).
 
-If you export a provider with an injection token that is not found in the module's dependency container, an error will be thrown.
+If you export a provider with an injection token that is not registeres as a provider, an error will be thrown.
+
+```typescript
+@module({
+  providers: [
+    CatsService,
+    {
+      provide: CatNameToken,
+      useValue: "Toulouse",
+    },
+  ],
+  exports: [TestService, CatNameToken],
+})
+export class CatsModule {}
+```
+
+If more than one provider is registered for the same identifier, you will have to add the `multiple` property to the `ExportedProvider`.
+
+```typescript
+@module({
+  providers: [
+    {
+      provide: CatNameToken,
+      useValue: "Toulouse",
+    },
+    {
+      provide: CatNameToken,
+      useValue: "Tomas O'Malley",
+    },
+    {
+      provide: CatNameToken,
+      useValue: "Duchess",
+    },
+  ],
+  exports: [
+    {
+      provide: CatNameToken,
+      multiple: true,
+    },
+  ],
+})
+export class CatsModule {}
+```
+
+```bash
+@imported(CatNameToken) = ["Toulouse", "Tomas O'Malley", "Duchess"]
+```
+
+And if you want to re-export providers with an identifier that have been imported into a module you must add the `deep` property.
+
+```typescript
+@module({
+  providers: [
+    {
+      provide: CatNameToken,
+      useValue: "Toulouse",
+    },
+    {
+      provide: CatNameToken,
+      useValue: "Tomas O'Malley",
+    },
+    {
+      provide: CatNameToken,
+      useValue: "Duchess",
+    },
+  ],
+  exports: [
+    {
+      provide: CatNameToken,
+      multiple: true,
+    },
+  ],
+})
+export class CatsModule {}
+
+@module({
+  imports: [CatsModule],
+  providers: [
+    {
+      provide: CatNameToken,
+      useValue: "Félix",
+    },
+  ],
+  exports: [
+    {
+      provide: CatNameToken,
+      multiple: true,
+      deep: true,
+    },
+  ],
+})
+export class MoreCatsModule {}
+```
+
+```bash
+@imported(CatNameToken) = ["Toulouse", "Tomas O'Malley", "Duchess", "Félix"]
+```
 
 #### Addons
 
@@ -286,16 +413,16 @@ The following `publicAddon` addon is a simple example of a `ModuleAddon` that re
 ```typescript
 import { ModuleAddon } from "inversify-sugar";
 
-export const publicAddon: ModuleAddon<Provider[]> = (
-  ...providers
-) {
+export const publicAddon: ModuleAddon<Provider[]> = (providers) => {
   return () => {
     return {
       providers,
-      exports: providers,
+      exports: providers.map((provider) =>
+        typeof provider === "function" ? provider : provider.provide
+      ),
     };
   };
-}
+};
 ```
 
 ```typescript
