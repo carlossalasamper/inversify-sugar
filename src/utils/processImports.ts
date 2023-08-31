@@ -1,10 +1,13 @@
 import ExportedProviderRef from "../types/ExportedProviderRef";
-import { Newable } from "../types";
 import importModule from "./importModule";
 import bindExportedProviderRef from "./bindExportedProviderRef";
 import getAllMetadata from "./getAllMetadata";
 import ModuleMetadata from "../types/ModuleMetadata";
 import { MODULE_METADATA_KEYS } from "./constants";
+import Module, { DynamicModule, NewableModule } from "../types/Module";
+import isNewable from "./validation/isNewable";
+import isDynamicModule from "./validation/isDynamicModule";
+import importDynamicModule from "./importDynamicModule";
 
 /**
  * @description This function is used to process imports.
@@ -12,13 +15,19 @@ import { MODULE_METADATA_KEYS } from "./constants";
  * Then you can inject them as an array.
  */
 export default function processImports(
-  Module: Newable,
-  imports: Newable[]
+  Module: NewableModule,
+  imports: Module[]
 ): ExportedProviderRef[] {
   const { container } = getAllMetadata<ModuleMetadata>(
     Module.prototype,
     MODULE_METADATA_KEYS
   );
+  const newableModules: NewableModule[] = imports.filter((item) =>
+    isNewable(item)
+  ) as NewableModule[];
+  const dynamicModules: DynamicModule[] = imports.filter((item) =>
+    isDynamicModule(item)
+  ) as DynamicModule[];
   const allRefs: ExportedProviderRef[] = [];
   const reducedRefs: ExportedProviderRef[] = [];
   const groups: Record<
@@ -29,7 +38,11 @@ export default function processImports(
     }
   > = {};
 
-  for (const item of imports) {
+  for (const item of dynamicModules) {
+    allRefs.push(...importDynamicModule(item));
+  }
+
+  for (const item of newableModules) {
     allRefs.push(...importModule(item));
   }
 

@@ -4,20 +4,22 @@ import Provider, {
   NewableProvider,
   FactoryProvider,
   ValueProvider,
+  AsyncFactoryProvider,
 } from "../types/Provider";
-import isNewableProvider from "./validation/isNewableProvider";
+import isNewable from "./validation/isNewable";
 import isClassProvider from "./validation/isClassProvider";
 import isValueProvider from "./validation/isValueProvider";
 import isFactoryProvider from "./validation/isFactoryProvider";
 import setScope from "./setScope";
 import { Container } from "inversify";
 import { PROVIDED_TAG } from "./constants";
+import isAsyncFactoryProvider from "./validation/isAsyncFactoryProvider";
 
 export const bindProviderToContainer = (
   provider: Provider,
   container: Container
 ) => {
-  if (isNewableProvider(provider)) {
+  if (isNewable(provider)) {
     const newableProvider = provider as NewableProvider;
 
     container
@@ -46,6 +48,13 @@ export const bindProviderToContainer = (
     container
       .bind(factoryProvider.provide)
       .toFactory(factoryProvider.useFactory)
+      .whenTargetTagged(PROVIDED_TAG, true);
+  } else if (isAsyncFactoryProvider(provider)) {
+    const asyncFactoryProvider = provider as AsyncFactoryProvider;
+
+    container
+      .bind(asyncFactoryProvider.provide)
+      .toProvider(asyncFactoryProvider.useAsyncFactory)
       .whenTargetTagged(PROVIDED_TAG, true);
   }
 };

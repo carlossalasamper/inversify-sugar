@@ -7,17 +7,8 @@ export default function module({
   imports = [],
   providers: allProviders = [],
   exports = [],
-  addons = [],
 }: ModuleMetadataArgs) {
   return (target: Newable) => {
-    const addonsResult = addons.map((addon) => addon(target));
-    const addonsMetadata = {
-      imports: addonsResult.map((result) => result.imports || []).flat(),
-      providers: addonsResult.map((result) => result.providers || []).flat(),
-      exports: addonsResult.map((result) => result.exports || []).flat(),
-    };
-
-    allProviders = allProviders.concat(addonsMetadata.providers);
     const providers = allProviders.filter(
       (provider: any) => !provider.isGlobal
     );
@@ -29,10 +20,10 @@ export default function module({
       isModule: true,
       isBinded: false,
       container: new ModuleContainer(),
-      imports: imports.concat(addonsMetadata.imports),
+      imports,
       providers,
       globalProviders,
-      exports: exports.concat(addonsMetadata.exports),
+      exports,
     };
 
     metadata.container.parent = InversifySugar.globalContainer;
