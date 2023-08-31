@@ -1,7 +1,8 @@
 import { injectable } from "inversify";
 import processImports from "../../src/utils/processImports";
-import { module } from "../../src";
+import { getModuleContainer, module } from "../../src";
 import ExportedProviderRef from "../../src/types/ExportedProviderRef";
+import { DynamicModule } from "../../src/types/Module";
 
 describe("processImports", () => {
   it("Should group refs with the same provider.", () => {
@@ -223,5 +224,31 @@ describe("processImports", () => {
     expect(result).toHaveLength(1);
     expect(result[0].provide).toEqual(reducedRefs[0].provide);
     expect(result[0].getValue()).toHaveLength(6);
+  });
+
+  it("Should import a dynamic module", () => {
+    @module({})
+    class Module {}
+
+    @module({})
+    class RootModule {}
+
+    const dynamicModule: DynamicModule = {
+      module: Module,
+      providers: [
+        {
+          provide: "test",
+          useValue: "test",
+        },
+      ],
+      exports: ["test"],
+    };
+
+    const exportedProviderRefs = processImports(RootModule, [dynamicModule]);
+
+    expect(getModuleContainer(RootModule).isBound("test")).toBe(true);
+    expect(exportedProviderRefs).toHaveLength(1);
+    expect(exportedProviderRefs[0].provide).toBe("test");
+    expect(exportedProviderRefs[0].getValue()).toBe("test");
   });
 });

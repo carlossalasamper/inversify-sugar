@@ -62,10 +62,28 @@ export interface FactoryProvider<T = any> extends WithProvide, WithIsGlobal {
   useClass?: never;
 }
 
+/**
+ * @description Interface defining a *AsyncFactory* type provider. The scope of a async factory provider is always singleton.
+ * AsyncFactory is an alias of the Inversify Provider.
+ */
+export interface AsyncFactoryProvider<T = any>
+  extends WithProvide,
+    WithIsGlobal {
+  /**
+   * @description Factory function to be injected.
+   */
+  useAsyncFactory: (
+    context: interfaces.Context
+  ) => (...args: any[]) => Promise<T>;
+  useValue?: never;
+  useClass?: never;
+}
+
 type Provider<T = any> =
   | NewableProvider<T>
   | ClassProvider<T>
   | ValueProvider<T>
-  | FactoryProvider<T>;
+  | FactoryProvider<T>
+  | AsyncFactoryProvider<T>;
 
 export default Provider;

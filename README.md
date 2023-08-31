@@ -22,7 +22,6 @@
     - [Imports](#imports)
     - [Providers](#providers)
     - [Exports](#exports)
-    - [Addons](#addons)
     - [Get the Container of a Module](#get-the-container-of-a-module)
     - [ModuleContainer](#modulecontainer)
   - [Injection](#injection)
@@ -255,7 +254,7 @@ import { AppModule } from "./AppModule";
 InversifySugar.run(AppModule);
 ```
 
-The module decorator accepts an object argument with the `imports`, `providers`, `exports` and `addons` properties.
+The module decorator accepts an object argument with the `imports`, `providers` and `exports` properties.
 
 Next we will explain what each of these properties is for.
 
@@ -266,6 +265,50 @@ The list of imported modules that export the providers which are required in thi
 ```typescript
 @module({
   imports: [CatsModule],
+})
+export class AppModule {}
+```
+
+You can also use the `forRoot` pattern to generate dynamic modules in the air and inject a configuration into the container.
+
+The following example illustrates how we could inject a [Mongoose](https://mongoosejs.com/) database connection asynchronously from the options we pass as a parameter to the static `forRoot` method.
+
+```typescript
+@module({})
+export default class MongooseModule {
+  static forRoot(config: MongooseConnectionConfig): DynamicModule {
+    const { uri, options } = config;
+
+    return {
+      module: MongooseModule,
+      providers: [
+        {
+          provide: MongooseConnectionToken,
+          useAsyncFactory: () => async () => {
+            if (!mongoose.connection || mongoose.connection.readyState === 0) {
+              await mongoose.connect(uri, options);
+            }
+
+            return mongoose.connection;
+          },
+          isGlobal: true,
+        },
+        {
+          provide: MongooseConnectionConfigToken,
+          useValue: config,
+          isGlobal: true,
+        },
+      ],
+    };
+  }
+}
+```
+
+Now we just need to import the dynamic module into the `AppModule` to globally provide the database connection and configuration.
+
+```typescript
+@module({
+  imports: [MongooseModule.forRoot({ uri: process.env.MONGO_URI })],
 })
 export class AppModule {}
 ```
@@ -401,42 +444,6 @@ export class MoreCatsModule {}
 ```bash
 @imported(CatNameToken) = ["Toulouse", "Tomas O'Malley", "Duchess", "Félix"]
 ```
-
-#### Addons
-
-A `ModuleAddon` is a configuration for a module that we can reuse in different modules of our application.
-
-The `@module()` decorator accepts the `addons` property which is an array of settings to be concatenated with the main module settings.
-
-The following `publicAddon` addon is a simple example of a `ModuleAddon` that registers a provider and also adds it to `exports` to expose it to the module's public API.
-
-```typescript
-import { ModuleAddon } from "inversify-sugar";
-
-export const publicAddon: ModuleAddon<Provider[]> = (providers) => {
-  return () => {
-    return {
-      providers,
-      exports: providers.map((provider) =>
-        typeof provider === "function" ? provider : provider.provide
-      ),
-    };
-  };
-};
-```
-
-```typescript
-import { publicAddon } from "./addons/publicAddon";
-import { Service1 } from "./services/Service1";
-import { Service2 } from "./services/Service2";
-
-@module({
-  addons: [publicAddon(Service1, Service2)],
-})
-export class AppModule {}
-```
-
-You can write as many addons as you need to reuse analog configurations between modules.
 
 #### Get the Container of a Module
 

@@ -10,6 +10,7 @@ import processImports from "./processImports";
 import { MODULE_IS_BINDED_KEY, MODULE_METADATA_KEYS } from "./constants";
 import { bindProviderToContainer } from "./bindProviderToContainer";
 import { bindProviderToModule } from "./bindProviderToModule";
+import { NewableModule } from "../types/Module";
 
 export default function importModule(
   Module: Newable,
@@ -39,7 +40,7 @@ export default function importModule(
  * @param Module
  * @returns
  */
-function importRootModule(Module: Newable) {
+function importRootModule(Module: NewableModule) {
   const metadata = getAllMetadata<ModuleMetadata>(
     Module.prototype,
     MODULE_METADATA_KEYS
