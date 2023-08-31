@@ -45,42 +45,26 @@ export default function createExportedProviderRef(
         true
       );
   const getValue = () => {
-    let result;
+    const results = [];
 
-    if (detailedExportedProvider.multiple || detailedExportedProvider.deep) {
-      if (detailedExportedProvider.deep) {
-        result = [];
-
-        result.push(
-          ...metadata.container.getAllTagged(
-            detailedExportedProvider.provide,
-            PROVIDED_TAG,
-            true
-          )
-        );
-        result.push(
-          ...metadata.container.getAllTagged(
-            detailedExportedProvider.provide,
-            IMPORTED_TAG,
-            true
-          )
-        );
-      } else {
-        result = metadata.container.getAllTagged(
-          detailedExportedProvider.provide,
-          PROVIDED_TAG,
-          true
-        );
-      }
-    } else {
-      result = metadata.container.getTagged(
+    results.push(
+      ...metadata.container.getAllTagged(
         detailedExportedProvider.provide,
         PROVIDED_TAG,
         true
+      )
+    );
+    if (detailedExportedProvider.deep) {
+      results.push(
+        ...metadata.container.getAllTagged(
+          detailedExportedProvider.provide,
+          IMPORTED_TAG,
+          true
+        )
       );
     }
 
-    return result;
+    return results.length === 1 ? results[0] : results;
   };
 
   if (isBound) {
