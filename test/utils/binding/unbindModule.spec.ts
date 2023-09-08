@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
-import { InversifySugar, getModuleContainer, module } from "../../src";
-import importModule from "../../src/utils/importModule";
-import unbindModule from "../../src/utils/unbindModule";
-import messagesMap from "../../src/utils/messagesMap";
+import { InversifySugar, getModuleContainer, module } from "../../../src";
+import importModule from "../../../src/utils/importModule";
+import unbindModule from "../../../src/utils/binding/unbindModule";
+import messagesMap from "../../../src/utils/messagesMap";
 
 describe("unbindModule", () => {
   beforeEach(() => {
@@ -29,7 +29,7 @@ describe("unbindModule", () => {
 
     const testModuleContainer = getModuleContainer(TestModule);
 
-    expect(testModuleContainer.isBound(TestService)).toBe(false);
+    expect(testModuleContainer.isProvided(TestService)).toBe(false);
   });
 
   it("Should unbind a module with providers.", () => {
@@ -45,12 +45,12 @@ describe("unbindModule", () => {
 
     unbindModule(ProvidersModule);
 
-    expect(getModuleContainer(ProvidersModule).isBound(TestService)).toBe(
+    expect(getModuleContainer(ProvidersModule).isProvided(TestService)).toBe(
       false
     );
   });
 
-  it("Should unbind a module with exports and access exported provider.", () => {
+  it("Should unbind a module with exports and not access exported provider.", () => {
     @injectable()
     class TestService {}
 
@@ -69,7 +69,9 @@ describe("unbindModule", () => {
 
     unbindModule(ExportsModule);
 
-    expect(getModuleContainer(ExportsModule).isBound(TestService)).toBe(false);
+    expect(getModuleContainer(ExportsModule).isImported(TestService)).toBe(
+      false
+    );
   });
 
   it("Should print a warning when unbinding a class that is not a module.", () => {

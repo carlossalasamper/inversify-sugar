@@ -3,7 +3,6 @@ import { InversifySugar, module } from "../../src";
 import getModuleContainer from "../../src/utils/getModuleContainer";
 import importModule from "../../src/utils/importModule";
 import messagesMap from "../../src/utils/messagesMap";
-import { IMPORTED_TAG } from "../../src/utils/constants";
 import provided from "../../src/decorators/provided";
 
 @injectable()
@@ -29,7 +28,7 @@ describe("importModule", () => {
 
     const testModuleContainer = getModuleContainer(TestModule);
 
-    expect(testModuleContainer.isBound(TestService)).toBe(true);
+    expect(testModuleContainer.isProvided(TestService)).toBe(true);
   });
 
   it("Should import a module with providers.", () => {
@@ -40,7 +39,9 @@ describe("importModule", () => {
 
     importModule(ProvidersModule);
 
-    expect(getModuleContainer(ProvidersModule).isBound(TestService)).toBe(true);
+    expect(getModuleContainer(ProvidersModule).isProvided(TestService)).toBe(
+      true
+    );
   });
 
   it("Should import a module where a provider depends on another provider.", () => {
@@ -62,7 +63,7 @@ describe("importModule", () => {
 
     importModule(RootModule, true);
 
-    expect(getModuleContainer(ProvidersModule).isBound(TestService2)).toBe(
+    expect(getModuleContainer(ProvidersModule).isProvided(TestService2)).toBe(
       true
     );
   });
@@ -81,7 +82,9 @@ describe("importModule", () => {
 
     importModule(ExportsModule);
 
-    expect(getModuleContainer(ExportsModule).isBound(TestService)).toBe(true);
+    expect(getModuleContainer(ExportsModule).isImported(TestService)).toBe(
+      true
+    );
   });
 
   it("Should print a warning when importing a class that is not a module.", () => {
@@ -115,10 +118,6 @@ describe("importModule", () => {
     class RootModule {}
 
     importModule(RootModule, true);
-
-    const testModuleContainer = getModuleContainer(TestModule);
-
-    expect(testModuleContainer.isBound(GlobalService)).toBe(true);
 
     expect(InversifySugar.globalContainer.isBound(GlobalService)).toBe(true);
   });
@@ -166,9 +165,9 @@ describe("importModule", () => {
 
     const container = getModuleContainer(RootModule);
 
-    expect(
-      container.getTagged(TestService, IMPORTED_TAG, true).aService
-    ).toBeInstanceOf(AService);
+    expect(container.getImported(TestService).aService).toBeInstanceOf(
+      AService
+    );
   });
 
   it("Should resolve dependencies of DetailedExportedProvider multiple.", () => {
@@ -208,11 +207,7 @@ describe("importModule", () => {
     importModule(RootModule, true);
 
     const container = getModuleContainer(RootModule);
-    const resolvedProviders = container.getTagged(
-      ProviderToken,
-      IMPORTED_TAG,
-      true
-    );
+    const resolvedProviders = container.getImported(ProviderToken);
 
     expect(resolvedProviders).toHaveLength(2);
   });
@@ -247,8 +242,8 @@ describe("importModule", () => {
 
     const container = getModuleContainer(RootModule);
 
-    expect(container.isBound(AService)).toBe(false);
-    expect(container.isBound(BService)).toBe(false);
+    expect(container.isImported(AService)).toBe(false);
+    expect(container.isImported(BService)).toBe(false);
   });
 
   it("Should throw an error when exporting a SingleExportedProvider that is not bound.", () => {
@@ -322,8 +317,8 @@ describe("importModule", () => {
 
     importModule(RootModule, true);
 
-    expect(getModuleContainer(AModule).isBound(TestService)).toBe(true);
-    expect(getModuleContainer(BModule).isBound(TestService)).toBe(true);
+    expect(getModuleContainer(AModule).isImported(TestService)).toBe(true);
+    expect(getModuleContainer(BModule).isImported(TestService)).toBe(true);
   });
 
   it("Exported providers of a imported module shouldn't be bound to the RootContainer container when deep = false.", () => {
@@ -352,7 +347,7 @@ describe("importModule", () => {
     importModule(RootModule, false);
 
     expect(
-      getModuleContainer(RootModule).getTagged(TestService, IMPORTED_TAG, true)
+      getModuleContainer(RootModule).getImported(TestService)
     ).toBeInstanceOf(TestService);
   });
 });

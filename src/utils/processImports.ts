@@ -1,13 +1,10 @@
 import ExportedProviderRef from "../types/ExportedProviderRef";
 import importModule from "./importModule";
-import bindExportedProviderRef from "./bindExportedProviderRef";
-import getAllMetadata from "./getAllMetadata";
-import ModuleMetadata from "../types/ModuleMetadata";
-import { MODULE_METADATA_KEYS } from "./constants";
 import Module, { DynamicModule, NewableModule } from "../types/Module";
 import isNewable from "./validation/isNewable";
 import isDynamicModule from "./validation/isDynamicModule";
 import importDynamicModule from "./importDynamicModule";
+import { getModuleMetadata } from "./metadata/getModuleMetadata";
 
 /**
  * @description This function is used to process imports.
@@ -18,10 +15,7 @@ export default function processImports(
   Module: NewableModule,
   imports: Module[]
 ): ExportedProviderRef[] {
-  const { container } = getAllMetadata<ModuleMetadata>(
-    Module.prototype,
-    MODULE_METADATA_KEYS
-  );
+  const { container } = getModuleMetadata(Module);
   const newableModules: NewableModule[] = imports.filter((item) =>
     isNewable(item)
   ) as NewableModule[];
@@ -78,7 +72,7 @@ export default function processImports(
 
     reducedRefs.push(reducedRef);
 
-    bindExportedProviderRef(reducedRef, container);
+    container.bindExportedProviderRef(reducedRef);
   }
 
   return reducedRefs;

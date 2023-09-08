@@ -1,15 +1,11 @@
-import { NewableModule } from "../types/Module";
-import ModuleMetadata from "../types/ModuleMetadata";
-import { IS_MODULE_KEY, MODULE_METADATA_KEYS } from "./constants";
-import getAllMetadata from "./getAllMetadata";
-import messagesMap from "./messagesMap";
-import isNewable from "./validation/isNewable";
+import { NewableModule } from "../../types/Module";
+import { IS_MODULE_KEY } from "../constants";
+import messagesMap from "../messagesMap";
+import isNewable from "../validation/isNewable";
+import { getModuleMetadata } from "../metadata/getModuleMetadata";
 
 export default function unbindModule(Module: NewableModule) {
-  const metadata = getAllMetadata<ModuleMetadata>(
-    Module.prototype,
-    MODULE_METADATA_KEYS
-  );
+  const metadata = getModuleMetadata(Module);
   const newableModulesImported: NewableModule[] = metadata.imports.filter(
     (item) => isNewable(item)
   ) as NewableModule[];

@@ -5,11 +5,11 @@ import {
   FactoryProvider,
   ValueProvider,
   AsyncFactoryProvider,
-} from "../../src/types/Provider";
-import { getModuleContainer, module } from "../../src";
-import { bindProviderToContainer } from "../../src/utils/bindProviderToContainer";
-import { bindProviderToModule } from "../../src/utils/bindProviderToModule";
-import { PROVIDED_TAG } from "../../src/utils/constants";
+} from "../../../src/types/Provider";
+import { getModuleContainer, module } from "../../../src";
+import { bindProviderToContainer } from "../../../src/utils/binding/bindProviderToContainer";
+import { bindProviderToModule } from "../../../src/utils/binding/bindProviderToModule";
+import { PROVIDED_TAG } from "../../../src/utils/constants";
 
 const TestClassToken = Symbol();
 
@@ -34,7 +34,7 @@ describe("bindProvider", () => {
 
     const container = getModuleContainer(TestModule);
 
-    expect(container.isBound(TestClass)).toBe(true);
+    expect(container.isProvided(TestClass)).toBe(true);
   });
 
   it("Should bind a ClassProvider without provide.", () => {
@@ -44,7 +44,7 @@ describe("bindProvider", () => {
 
     const container = getModuleContainer(TestModule);
 
-    expect(container.isBound(TestClass)).toBe(true);
+    expect(container.isProvided(TestClass)).toBe(true);
   });
 
   it("Should bind a ClassProvider with provide.", () => {
@@ -57,7 +57,7 @@ describe("bindProvider", () => {
 
     const container = getModuleContainer(TestModule);
 
-    expect(container.isBound(TestClassToken)).toBe(true);
+    expect(container.isProvided(TestClassToken)).toBe(true);
   });
 
   it("Should bind a ValueProvider.", () => {
@@ -70,7 +70,7 @@ describe("bindProvider", () => {
 
     const container = getModuleContainer(TestModule);
 
-    expect(container.isBound(TestClassToken)).toBe(true);
+    expect(container.isProvided(TestClassToken)).toBe(true);
   });
 
   it("Should bind a FactoryProvider.", () => {
@@ -83,7 +83,7 @@ describe("bindProvider", () => {
 
     const container = getModuleContainer(TestModule);
 
-    expect(container.isBound(TestClassToken)).toBe(true);
+    expect(container.isProvided(TestClassToken)).toBe(true);
   });
 
   it("Should bind a AsyncFactoryProvider to a module.", () => {
@@ -95,13 +95,9 @@ describe("bindProvider", () => {
 
     const container = getModuleContainer(TestModule);
 
-    expect(container.isBound(TestClassToken)).toBe(true);
+    expect(container.isProvided(TestClassToken)).toBe(true);
     expect(
-      container.getTagged<() => Promise<TestClass>>(
-        TestClassToken,
-        PROVIDED_TAG,
-        true
-      )()
+      container.getProvided<() => Promise<TestClass>>(TestClassToken)()
     ).resolves.toBeInstanceOf(TestClass);
   });
 

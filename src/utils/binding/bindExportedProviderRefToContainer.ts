@@ -1,8 +1,8 @@
 import { Container } from "inversify";
-import ExportedProviderRef from "../types/ExportedProviderRef";
-import { IMPORTED_TAG } from "./constants";
+import ExportedProviderRef from "../../types/ExportedProviderRef";
+import { IMPORTED_TAG } from "../constants";
 
-export default function bindExportedProviderRef(
+export default function bindExportedProviderRefToContainer(
   exportedProviderRef: ExportedProviderRef,
   container: Container
 ) {

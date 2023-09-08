@@ -20,7 +20,7 @@ describe("importDynamicModule", () => {
 
     const exportedProviderRefs = importDynamicModule(dynamicModule);
 
-    expect(getModuleContainer(Module).isBound("test")).toBe(true);
+    expect(getModuleContainer(Module).isProvided("test")).toBe(true);
     expect(exportedProviderRefs).toHaveLength(1);
     expect(exportedProviderRefs[0].provide).toBe("test");
     expect(exportedProviderRefs[0].getValue()).toBe("test");
@@ -42,7 +42,7 @@ describe("importDynamicModule", () => {
 
     const exportedProviderRefs = importDynamicModule(dynamicModule);
 
-    expect(getModuleContainer(Module).isBound("test")).toBe(true);
+    expect(getModuleContainer(Module).isProvided("test")).toBe(true);
     expect(exportedProviderRefs).toHaveLength(0);
   });
 
@@ -63,7 +63,7 @@ describe("importDynamicModule", () => {
 
     importDynamicModule(dynamicModule);
 
-    expect(getModuleContainer(Module).isCurrentBound("test")).toBe(false);
+    expect(getModuleContainer(Module).isProvided("test")).toBe(true);
     expect(InversifySugar.globalContainer.isBound("test")).toBe(true);
   });
 });

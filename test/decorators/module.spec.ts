@@ -1,18 +1,13 @@
-import { Container } from "inversify";
-import { module } from "../../src";
+import { ModuleContainer, module } from "../../src";
 import ModuleMetadata from "../../src/types/ModuleMetadata";
-import { MODULE_METADATA_KEYS } from "../../src/utils/constants";
-import getAllMetadata from "../../src/utils/getAllMetadata";
+import { getModuleMetadata } from "../../src/utils/metadata/getModuleMetadata";
 
 @module({})
 class EmptyMetadataModule {}
 
 describe("@module", () => {
   it("Should generate correct metadata from empty args.", () => {
-    const metadata = getAllMetadata<ModuleMetadata>(
-      EmptyMetadataModule.prototype,
-      MODULE_METADATA_KEYS
-    );
+    const metadata = getModuleMetadata(EmptyMetadataModule);
 
     expect(metadata).toMatchObject<Omit<ModuleMetadata, "id" | "container">>({
       isModule: true,
@@ -23,7 +18,7 @@ describe("@module", () => {
       exports: [],
     });
 
-    expect(metadata.container).toBeInstanceOf(Container);
+    expect(metadata.container).toBeInstanceOf(ModuleContainer);
   });
 
   it("Should separate scoped and global providers.", () => {
@@ -42,10 +37,7 @@ describe("@module", () => {
     })
     class ProvidersModule {}
 
-    const metadata = getAllMetadata<ModuleMetadata>(
-      ProvidersModule.prototype,
-      MODULE_METADATA_KEYS
-    );
+    const metadata = getModuleMetadata(ProvidersModule);
 
     expect(metadata.providers).toHaveLength(1);
     expect(metadata.globalProviders).toHaveLength(1);

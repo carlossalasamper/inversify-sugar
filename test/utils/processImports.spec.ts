@@ -246,7 +246,7 @@ describe("processImports", () => {
 
     const exportedProviderRefs = processImports(RootModule, [dynamicModule]);
 
-    expect(getModuleContainer(RootModule).isBound("test")).toBe(true);
+    expect(getModuleContainer(RootModule).isImported("test")).toBe(true);
     expect(exportedProviderRefs).toHaveLength(1);
     expect(exportedProviderRefs[0].provide).toBe("test");
     expect(exportedProviderRefs[0].getValue()).toBe("test");

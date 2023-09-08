@@ -2,9 +2,9 @@
 import ExportedProviderRef from "../types/ExportedProviderRef";
 import { DynamicModule } from "../types/Module";
 import InversifySugar from "./InversifySugar";
-import { bindProviderToContainer } from "./bindProviderToContainer";
-import { bindProviderToModule } from "./bindProviderToModule";
+import { bindProviderToContainer } from "./binding/bindProviderToContainer";
 import createExportedProviderRef from "./createExportedProviderRef";
+import { getModuleMetadata } from "./metadata/getModuleMetadata";
 
 export default function importDynamicModule({
   module,
@@ -16,13 +16,14 @@ export default function importDynamicModule({
   const globalProviders = allProviders.filter(
     (provider: any) => !!provider.isGlobal
   );
+  const { container } = getModuleMetadata(module);
 
   for (const provider of globalProviders) {
     bindProviderToContainer(provider, InversifySugar.globalContainer);
   }
 
   for (const provider of providers) {
-    bindProviderToModule(provider, module);
+    container.bindProvider(provider);
   }
 
   for (const exportedProvider of exports) {

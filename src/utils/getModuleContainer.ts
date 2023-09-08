@@ -1,14 +1,9 @@
 import { Newable } from "../types";
-import ModuleMetadata from "../types/ModuleMetadata";
-import ModuleContainer from "./ModuleContainer";
-import { MODULE_METADATA_KEYS } from "./constants";
-import getAllMetadata from "./getAllMetadata";
+import SugaryContainer from "./ModuleContainer";
+import { getModuleMetadata } from "./metadata/getModuleMetadata";
 
-export default function getModuleContainer(Module: Newable): ModuleContainer {
-  const metadata = getAllMetadata<ModuleMetadata>(
-    Module.prototype,
-    MODULE_METADATA_KEYS
-  );
+export default function getModuleContainer(Module: Newable): SugaryContainer {
+  const metadata = getModuleMetadata(Module);
 
   return metadata.container;
 }
