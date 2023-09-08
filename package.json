@@ -1,6 +1,6 @@
 {
   "name": "inversify-sugar",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "description": "🧁 InversifyJS framework to build hierarchical dependency systems with an elegant API.",
   "author": {
     "name": "Carlos Sala Samper",
@@ -45,13 +45,11 @@
     "npm:publish": "yarn test && yarn build && npm publish"
   },
   "dependencies": {
-    "cli-color": "^2.0.3",
-    "reflect-metadata": "^0.1.13",
-    "inversify": "^6.0.1"
+    "inversify": "^6.0.1",
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.6.7",
-    "@types/cli-color": "^2.0.2",
     "@types/jest": "^29.5.3",
     "@types/node": "^20.4.10",
     "@typescript-eslint/eslint-plugin": "^5.59.11",
