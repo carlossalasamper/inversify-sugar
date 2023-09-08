@@ -1,25 +1,19 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import getAllMetadata from "./getAllMetadata";
-import ModuleMetadata from "../types/ModuleMetadata";
 import { Newable } from "../types";
 import InversifySugar from "./InversifySugar";
 import messagesMap from "./messagesMap";
 import ExportedProviderRef from "../types/ExportedProviderRef";
 import createExportedProviderRef from "./createExportedProviderRef";
 import processImports from "./processImports";
-import { MODULE_IS_BINDED_KEY, MODULE_METADATA_KEYS } from "./constants";
-import { bindProviderToContainer } from "./bindProviderToContainer";
-import { bindProviderToModule } from "./bindProviderToModule";
+import { MODULE_IS_BINDED_KEY } from "./constants";
+import { bindProviderToContainer } from "./binding/bindProviderToContainer";
 import { NewableModule } from "../types/Module";
+import { getModuleMetadata } from "./metadata/getModuleMetadata";
 
 export default function importModule(
   Module: Newable,
   isRoot = false
 ): ExportedProviderRef[] {
-  const metadata = getAllMetadata<ModuleMetadata>(
-    Module.prototype,
-    MODULE_METADATA_KEYS
-  );
+  const metadata = getModuleMetadata(Module);
   const exportedProviders: ExportedProviderRef[] = [];
 
   if (metadata.isModule) {
@@ -41,10 +35,7 @@ export default function importModule(
  * @returns
  */
 function importRootModule(Module: NewableModule) {
-  const metadata = getAllMetadata<ModuleMetadata>(
-    Module.prototype,
-    MODULE_METADATA_KEYS
-  );
+  const metadata = getModuleMetadata(Module);
 
   if (!metadata.isBinded) {
     for (const provider of metadata.providers.concat(
@@ -64,18 +55,15 @@ function importRootModule(Module: NewableModule) {
  * @description This function is used to import a child module.
  * @param Module
  */
-function importChildModule(Module: Newable) {
-  const metadata = getAllMetadata<ModuleMetadata>(
-    Module.prototype,
-    MODULE_METADATA_KEYS
-  );
+function importChildModule(Module: NewableModule) {
+  const metadata = getModuleMetadata(Module);
   const exportedProviderRefs: ExportedProviderRef[] = [];
 
   if (!metadata.isBinded) {
     processImports(Module, metadata.imports);
 
     for (const provider of metadata.providers) {
-      bindProviderToModule(provider, Module);
+      metadata.container.bindProvider(provider);
     }
 
     for (const provider of metadata.globalProviders) {

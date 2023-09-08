@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Newable } from "../types";
 import ModuleMetadata, { ModuleMetadataArgs } from "../types/ModuleMetadata";
-import { InversifySugar, ModuleContainer } from "../utils";
+import { ModuleContainer } from "../utils";
 
 export default function module({
   imports = [],
@@ -25,8 +25,6 @@ export default function module({
       globalProviders,
       exports,
     };
-
-    metadata.container.parent = InversifySugar.globalContainer;
 
     for (const key in metadata) {
       if (metadata.hasOwnProperty(key)) {

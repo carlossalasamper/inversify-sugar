@@ -1,6 +1,7 @@
-import { Container, interfaces } from "inversify";
+import { interfaces } from "inversify";
 import ModuleMetadata from "./ModuleMetadata";
 import Newable from "./Newable";
+import { ModuleContainer } from "../utils";
 
 export default interface InversifySugarOptions {
   /**
@@ -22,7 +23,7 @@ export default interface InversifySugarOptions {
    * */
   onModuleBinded:
     | ((
-        container: Container,
+        container: ModuleContainer,
         metadata: ModuleMetadata,
         Module: Newable
       ) => void)

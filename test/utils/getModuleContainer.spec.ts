@@ -1,12 +1,12 @@
-import { Container, injectable } from "inversify";
-import { getModuleContainer, module } from "../../src";
+import { injectable } from "inversify";
+import { ModuleContainer, getModuleContainer, module } from "../../src";
 import importModule from "../../src/utils/importModule";
 
 @injectable()
 class TestService {}
 
 describe("getModuleContainer", () => {
-  it("Should return the module container of a module.", () => {
+  it("Should return a ModuleContainer.", () => {
     @module({
       providers: [TestService],
     })
@@ -14,6 +14,6 @@ describe("getModuleContainer", () => {
 
     importModule(TestModule);
 
-    expect(getModuleContainer(TestModule)).toBeInstanceOf(Container);
+    expect(getModuleContainer(TestModule)).toBeInstanceOf(ModuleContainer);
   });
 });

@@ -3,12 +3,13 @@ import importModule from "./importModule";
 import ModuleMetadata from "../types/ModuleMetadata";
 import messagesMap from "./messagesMap";
 import InversifySugarState from "../types/InversifySugarState";
-import unbindModule from "./unbindModule";
+import unbindModule from "./binding/unbindModule";
 import { Container } from "inversify";
 import inversifySugarOptions, {
   defaultInverseSugarOptions,
 } from "./inversifySugarOptions";
 import { loggerMiddleware } from "../middlewares";
+import ModuleContainer from "./ModuleContainer";
 
 /**
  * @description InversifySugar is a utility class that helps you to bootstrap inversify and configure it.
@@ -58,7 +59,7 @@ export default class InversifySugar {
   }
 
   static onModuleBinded(
-    container: Container,
+    container: ModuleContainer,
     metadata: ModuleMetadata,
     Module: Newable
   ) {
@@ -71,7 +72,7 @@ export default class InversifySugar {
 
   static setOnModuleBinded(
     value: (
-      container: Container,
+      container: ModuleContainer,
       metadata: ModuleMetadata,
       Module: Newable
     ) => void

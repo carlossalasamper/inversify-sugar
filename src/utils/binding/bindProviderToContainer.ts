@@ -1,28 +1,24 @@
-import { Newable, Provider } from "../types";
-import ModuleMetadata from "../types/ModuleMetadata";
+import { Container } from "inversify";
+import { Provider } from "../../types";
+import isNewable from "../validation/isNewable";
+import setScope from "./setScope";
+import isClassProvider from "../validation/isClassProvider";
 import {
   AsyncFactoryProvider,
   ClassProvider,
   FactoryProvider,
   NewableProvider,
   ValueProvider,
-} from "../types/Provider";
-import { MODULE_METADATA_KEYS, PROVIDED_TAG } from "./constants";
-import getAllMetadata from "./getAllMetadata";
-import setScope from "./setScope";
-import isAsyncFactoryProvider from "./validation/isAsyncFactoryProvider";
-import isClassProvider from "./validation/isClassProvider";
-import isFactoryProvider from "./validation/isFactoryProvider";
-import isNewable from "./validation/isNewable";
-import isValueProvider from "./validation/isValueProvider";
+} from "../../types/Provider";
+import isAsyncFactoryProvider from "../validation/isAsyncFactoryProvider";
+import isFactoryProvider from "../validation/isFactoryProvider";
+import isValueProvider from "../validation/isValueProvider";
+import { PROVIDED_TAG } from "../constants";
 
-export const bindProviderToModule = (provider: Provider, Module: Newable) => {
-  const metatadata = getAllMetadata<ModuleMetadata>(
-    Module.prototype,
-    MODULE_METADATA_KEYS
-  );
-  const { container } = metatadata;
-
+export const bindProviderToContainer = (
+  provider: Provider,
+  container: Container
+) => {
   if (isNewable(provider)) {
     const newableProvider = provider as NewableProvider;
 
@@ -32,7 +28,6 @@ export const bindProviderToModule = (provider: Provider, Module: Newable) => {
     );
   } else if (isClassProvider(provider)) {
     const classProvider = provider as ClassProvider;
-
     setScope(
       classProvider.provide
         ? container.bind(classProvider.provide).to(classProvider.useClass)

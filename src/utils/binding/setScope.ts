@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { interfaces } from "inversify";
-import inversifySugarOptions from "./inversifySugarOptions";
+import inversifySugarOptions from "../inversifySugarOptions";
 
 export default function setScope(
   binding: interfaces.BindingInWhenOnSyntax<any>,

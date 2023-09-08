@@ -487,13 +487,27 @@ const providedService = testModuleContainer.getProvided(ProvidedService);
 const exportedService = appModuleContainer.getImported(ExportedService);
 ```
 
-The container returned by the `getModuleContainer()` function is an extension of Inversify's `Container` class that adds the necessary methods to access dependencies found both in the providers section of the container and in the container section of services imported by other modules.
+The container returned by the `getModuleContainer()` function is a wrapper of the Inversify's `Container` class that exposes only the necessary methods to access dependencies in both the providers section of the container and the container section of services imported by other modules.
 
 It has been necessary for us to separate the providers declared in one module from those imported from another module in these compartments in order to implement the functionality of exporting imported suppliers (re-exporting).
 
 #### ModuleContainer
 
-This is the class extending the container and these are the new methods it adds:
+```typescript
+isProvided(serviceIdentifier: interfaces.ServiceIdentifier<T>): boolean
+```
+
+```typescript
+isImported(serviceIdentifier: interfaces.ServiceIdentifier<T>): boolean
+```
+
+```typescript
+bindProvider(provider: Provider): void
+```
+
+```typescript
+bindExportedProviderRef(exportedProviderRef: ExportedProviderRef): void
+```
 
 ```typescript
 getProvided<T = unknown>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T
@@ -507,7 +521,17 @@ getAllProvided<T = unknown>(serviceIdentifier: interfaces.ServiceIdentifier<T>):
 getImported<T = unknown>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T | T[]
 ```
 
+```typescript
+getAllImported<T = unknown>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[]
+```
+
+```typescript
+unbindAll(): void
+```
+
 > ⚠️ For the moment the `getImported()` function will return a single value or an array depending on how many providers with the same `ServiceIdentifier` have been imported into the module.
+>
+> So `getImported()` and `getAllImported()` will return the same list of services when more than one service with the same identifier is bound.
 >
 > However, we do not rule out that this API changes in the future.
 

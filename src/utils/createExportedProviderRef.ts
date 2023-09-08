@@ -4,20 +4,15 @@ import ExportedProvider, {
   TokenExportedProvider,
 } from "../types/ExportedProvider";
 import ExportedProviderRef from "../types/ExportedProviderRef";
-import ModuleMetadata from "../types/ModuleMetadata";
-import { IMPORTED_TAG, MODULE_METADATA_KEYS, PROVIDED_TAG } from "./constants";
-import getAllMetadata from "./getAllMetadata";
 import messagesMap from "./messagesMap";
 import isDetailedExportedProvider from "./validation/isDetailedExportedProvider";
+import { getModuleMetadata } from "./metadata/getModuleMetadata";
 
 export default function createExportedProviderRef(
   Module: Newable,
   exportedProvider: ExportedProvider
 ): ExportedProviderRef[] {
-  const metadata = getAllMetadata<ModuleMetadata>(
-    Module.prototype,
-    MODULE_METADATA_KEYS
-  );
+  const metadata = getModuleMetadata(Module);
   const exportedProviderRefs: ExportedProviderRef[] = [];
   const detailedExportedProvider = (
     isDetailedExportedProvider(exportedProvider)
@@ -29,38 +24,18 @@ export default function createExportedProviderRef(
         }
   ) as DetailedExportedProvider;
   const isBound = detailedExportedProvider.deep
-    ? metadata.container.isBoundTagged(
-        detailedExportedProvider.provide,
-        PROVIDED_TAG,
-        true
-      ) &&
-      metadata.container.isBoundTagged(
-        detailedExportedProvider.provide,
-        IMPORTED_TAG,
-        true
-      )
-    : metadata.container.isBoundTagged(
-        detailedExportedProvider.provide,
-        PROVIDED_TAG,
-        true
-      );
+    ? metadata.container.isProvided(detailedExportedProvider.provide) &&
+      metadata.container.isImported(detailedExportedProvider.provide)
+    : metadata.container.isProvided(detailedExportedProvider.provide);
   const getValue = () => {
     const results = [];
 
     results.push(
-      ...metadata.container.getAllTagged(
-        detailedExportedProvider.provide,
-        PROVIDED_TAG,
-        true
-      )
+      ...metadata.container.getAllProvided(detailedExportedProvider.provide)
     );
     if (detailedExportedProvider.deep) {
       results.push(
-        ...metadata.container.getAllTagged(
-          detailedExportedProvider.provide,
-          IMPORTED_TAG,
-          true
-        )
+        ...metadata.container.getAllImported(detailedExportedProvider.provide)
       );
     }
 

@@ -1,4 +1,4 @@
-import getAllMetadata from "../../src/utils/getAllMetadata";
+import getAllMetadata from "../../../src/utils/metadata/getAllMetadata";
 
 class ClassA {}
 
