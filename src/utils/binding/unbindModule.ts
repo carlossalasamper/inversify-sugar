@@ -4,14 +4,14 @@ import messagesMap from "../messagesMap";
 import isNewable from "../validation/isNewable";
 import { getModuleMetadata } from "../metadata/getModuleMetadata";
 
-export default function unbindModule(Module: NewableModule) {
+export default async function unbindModule(Module: NewableModule) {
   const metadata = getModuleMetadata(Module);
   const newableModulesImported: NewableModule[] = metadata.imports.filter(
     (item) => isNewable(item)
   ) as NewableModule[];
 
   if (metadata.isBinded) {
-    metadata.container.unbindAll();
+    await metadata.container.unbindAllAsync();
     metadata.isBinded = false;
   }
 
@@ -19,7 +19,7 @@ export default function unbindModule(Module: NewableModule) {
     const isModule = !!Reflect.getMetadata(IS_MODULE_KEY, item.prototype);
 
     if (isModule) {
-      unbindModule(item);
+      await unbindModule(item);
     } else {
       console.warn(messagesMap.notAModuleUnbinded(item.name));
     }

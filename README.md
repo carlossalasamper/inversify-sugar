@@ -343,6 +343,10 @@ You can define a provider in different ways depending on the desired instantiati
 export class CatsModule {}
 ```
 
+You can also add the `onActivation` and `onDeactivation` handlers to providers that need it. Check the [activation handler](https://github.com/inversify/InversifyJS/blob/master/wiki/activation_handler.md) and [deactivation handler](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md) sections of Inversify documentation for more information.
+
+> ⚠️ Remember that the `onDeactivation` handler will throw an error if we try to define it in a provider that does not have singleton scope.
+
 #### Exports
 
 The subset of providers that will be e available in other modules which import this module. You can use either a `ExportedProvider` object or just its token (provide value).

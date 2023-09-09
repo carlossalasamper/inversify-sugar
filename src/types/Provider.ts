@@ -16,6 +16,11 @@ interface WithIsGlobal {
   isGlobal?: boolean;
 }
 
+interface WithHandlers<T = any> {
+  onActivation?: (context: interfaces.Context, injectable: T) => T;
+  onDeactivation?: (injectable: T) => void;
+}
+
 /**
  * @description Shorthand to define a *Class* provider to self in singleton scope.
  */
@@ -26,7 +31,8 @@ export type NewableProvider<T = any> = Newable<T>;
  */
 export interface ClassProvider<T = any>
   extends Partial<WithProvide>,
-    WithIsGlobal {
+    WithIsGlobal,
+    WithHandlers<T> {
   /**
    * @description Instance of a provider to be injected.
    */
@@ -34,7 +40,7 @@ export interface ClassProvider<T = any>
   useValue?: never;
   /**
    * @description Binding scope of a provider.
-   * @default 'Singleton'
+   * @default 'Transient'
    */
   scope?: interfaces.BindingScope;
 }
@@ -42,7 +48,10 @@ export interface ClassProvider<T = any>
 /**
  * @description Interface defining a *Value* type provider.
  */
-export interface ValueProvider<T = any> extends WithProvide, WithIsGlobal {
+export interface ValueProvider<T = any>
+  extends WithProvide,
+    WithIsGlobal,
+    WithHandlers<T> {
   /**
    * @description Instance of a provider to be injected.
    */
@@ -53,7 +62,10 @@ export interface ValueProvider<T = any> extends WithProvide, WithIsGlobal {
 /**
  * @description Interface defining a *Factory* type provider. The scope of a factory provider is always singleton.
  */
-export interface FactoryProvider<T = any> extends WithProvide, WithIsGlobal {
+export interface FactoryProvider<T = any>
+  extends WithProvide,
+    WithIsGlobal,
+    WithHandlers<T> {
   /**
    * @description Factory function to be injected.
    */
@@ -68,7 +80,8 @@ export interface FactoryProvider<T = any> extends WithProvide, WithIsGlobal {
  */
 export interface AsyncFactoryProvider<T = any>
   extends WithProvide,
-    WithIsGlobal {
+    WithIsGlobal,
+    WithHandlers<T> {
   /**
    * @description Factory function to be injected.
    */
