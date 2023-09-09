@@ -24,8 +24,8 @@ describe("InversifySugar", () => {
   );
   const onModuleBinded = jest.fn();
 
-  beforeEach(() => {
-    InversifySugar.reset();
+  beforeEach(async () => {
+    await InversifySugar.reset();
     InversifySugar.setOnModuleBinded(onModuleBinded);
     inversifySugarOptions.debug = true;
   });

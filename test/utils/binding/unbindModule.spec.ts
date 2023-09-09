@@ -5,11 +5,11 @@ import unbindModule from "../../../src/utils/binding/unbindModule";
 import messagesMap from "../../../src/utils/messagesMap";
 
 describe("unbindModule", () => {
-  beforeEach(() => {
-    InversifySugar.reset();
+  beforeEach(async () => {
+    await InversifySugar.reset();
   });
 
-  it("Should unbind a module with imports.", () => {
+  it("Should unbind a module with imports.", async () => {
     @injectable()
     class TestService {}
 
@@ -25,14 +25,14 @@ describe("unbindModule", () => {
 
     importModule(ImportsModule);
 
-    unbindModule(ImportsModule);
+    await unbindModule(ImportsModule);
 
     const testModuleContainer = getModuleContainer(TestModule);
 
     expect(testModuleContainer.isProvided(TestService)).toBe(false);
   });
 
-  it("Should unbind a module with providers.", () => {
+  it("Should unbind a module with providers.", async () => {
     @injectable()
     class TestService {}
 
@@ -43,14 +43,14 @@ describe("unbindModule", () => {
 
     importModule(ProvidersModule);
 
-    unbindModule(ProvidersModule);
+    await unbindModule(ProvidersModule);
 
     expect(getModuleContainer(ProvidersModule).isProvided(TestService)).toBe(
       false
     );
   });
 
-  it("Should unbind a module with exports and not access exported provider.", () => {
+  it("Should unbind a module with exports and not access exported provider.", async () => {
     @injectable()
     class TestService {}
 
@@ -67,14 +67,14 @@ describe("unbindModule", () => {
 
     importModule(ExportsModule);
 
-    unbindModule(ExportsModule);
+    await unbindModule(ExportsModule);
 
     expect(getModuleContainer(ExportsModule).isImported(TestService)).toBe(
       false
     );
   });
 
-  it("Should print a warning when unbinding a class that is not a module.", () => {
+  it("Should print a warning when unbinding a class that is not a module.", async () => {
     const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
 
     class NotAModule {}
@@ -84,7 +84,7 @@ describe("unbindModule", () => {
     })
     class ImportsModule {}
 
-    unbindModule(ImportsModule);
+    await unbindModule(ImportsModule);
 
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       messagesMap.notAModuleUnbinded(NotAModule.name)

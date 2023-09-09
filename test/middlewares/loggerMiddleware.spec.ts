@@ -3,8 +3,8 @@ import { InversifySugar, loggerMiddleware } from "../../src";
 import messagesMap from "../../src/utils/messagesMap";
 
 describe("loggerMiddleware", () => {
-  beforeAll(() => {
-    InversifySugar.reset();
+  beforeAll(async () => {
+    await InversifySugar.reset();
     InversifySugar.options.debug = true;
   });
 

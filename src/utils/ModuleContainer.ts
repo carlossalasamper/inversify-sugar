@@ -60,7 +60,7 @@ export default class ModuleContainer {
     );
   }
 
-  unbindAll() {
-    this.container.unbindAll();
+  async unbindAllAsync() {
+    return this.container.unbindAllAsync();
   }
 }

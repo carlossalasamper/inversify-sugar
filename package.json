@@ -1,6 +1,6 @@
 {
   "name": "inversify-sugar",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "description": "🧁 InversifyJS framework to build hierarchical dependency systems with an elegant API.",
   "author": {
     "name": "Carlos Sala Samper",

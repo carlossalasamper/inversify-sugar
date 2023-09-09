@@ -45,11 +45,12 @@ export default class InversifySugar {
    * @description This method is used to reset the options and state of the dependency system.
    * It is useful for testing purposes.
    */
-  static reset() {
+  static async reset() {
     InversifySugar.state.rootModule &&
-      unbindModule(InversifySugar.state.rootModule);
+      (await unbindModule(InversifySugar.state.rootModule));
 
-    InversifySugar.globalContainer.unbindAll();
+    await InversifySugar.globalContainer.unbindAllAsync();
+
     Object.assign(InversifySugar.state, {
       isRunning: false,
       rootModule: undefined,
