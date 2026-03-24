@@ -128,7 +128,7 @@ export class AppModule {}
 
 Compared to modern dependency system APIs, Inversify has a number of disadvantages:
 
-- ❌ Your have to create all the containers separately to scope the dependencies into modules (to build a hierarchical dependency system).
+- ❌ You have to create all the containers separately to scope the dependencies into modules (to build an hierarchical dependency system).
 - ❌ How do you plan to relate dependencies between containers without an import/export API?
 - ❌ There is no single entry point to initialize all the containers. They are initialized at the time the files that declare them are imported.
 
